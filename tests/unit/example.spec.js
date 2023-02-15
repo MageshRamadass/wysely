@@ -1,5 +1,5 @@
 // import { shallowMount } from '@vue/test-utils'
-import sum from '@./../../components/Layout/LayOut.vue'
+// import sum from '@./../../components/Layout/LayOut.vue'
 
 // describe('LayOut.vue', () => {
 //   it('renders props.msg when passed', () => {
@@ -10,7 +10,7 @@ import sum from '@./../../components/Layout/LayOut.vue'
 //     expect(wrapper.text()).toMatch(msg)
 //   })
 // })
-// import sum from './sum';
+import sum from './sum';
 
 test('adds 1 + 2 to equal 3', () => {
   expect(sum(1, 2)).toBe(3);

@@ -11,10 +11,7 @@
 
 <script>
 import SideMenubar from '../navdraw/SideMenubar.vue';
-function sum(a, b) {
-  return a + b;
-}
-module.exports = sum;
+
 export default {
     components: { SideMenubar },
     mounted() {
