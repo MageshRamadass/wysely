@@ -1,0 +1,1138 @@
+<template>
+  <v-app>
+    <v-container class="pa-0 pa-sm-3 pa-md-3">
+      <div class="pt-16 pa-6 pa-sm-4 pa-md-4">
+        <v-row>
+          <v-col cols="12" sm="9" md="9">
+            <p class="lstctntit headline mb-1">Holdings</p>
+            <p class="body-1 mb-0 mb-sm-4 mb-md-4" color="#878B93">
+              Stocks held by you in your various accounts
+            </p>
+          </v-col>
+          <v-col cols="12" sm="3" md="3">
+            <v-text-field v-model="FullName" dense color="gray" outlined class="rounded-lg mx-4 d-none d-md-flex"
+              label="Search holdings" prepend-inner-icon="mdi-magnify"></v-text-field>
+          </v-col>
+        </v-row>
+        <v-card color="#FFFAF6" outlined class="d-md-none elevation-0 rounded-lg pa-6">
+          <div class="text-center pa-4">
+            <p class="caption txtcapsty">Total investment</p>
+            <p class="ctnbtl headline mb-0" style="line-height: 28px; color: #505359">
+              {{ Math.abs(totals.Net_Value).toFixed(2) }}
+            </p>
+          </div>
+          <v-card outlined class="elevation-0 rounded-lg pa-4 pb-0">
+            <v-row no-gutters>
+              <v-col cols="12">
+                <v-row no-gutters>
+                  <v-col cols="5">
+                    <p class="caption txtcapsty">Holdings Value</p>
+                  </v-col>
+                  <v-col cols="7">
+                    <p class="ctnbtl body-1 text-right" style="line-height: 28px; color: #505359">
+                      {{ totals.BuyOrSell }}
+                    </p>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12">
+                <v-row no-gutters>
+                  <v-col cols="5">
+                    <p class="caption txtcapsty">Total P&L</p>
+                  </v-col>
+                  <v-col cols="7">
+                    <p class="ctnbtl sumval mb-0 text-right" style="line-height: 28px; color: #505359">
+                      {{ totals.Exchange }}
+                      <span class="caption ml-2 pa-1 rounded-lg" style="
+                          background-color: rgb(135, 139, 147, 0.1);
+                          color: rgb(135, 139, 147);
+                        " v-if="totals.Exchange == 0">0.00%</span>
+                      <span v-else>
+                        <span v-if="totals.Exchange > 0" class="caption ml-2 pa-1 rounded-lg"
+                          style="background-color: #eeffed; color: #34a853">+{{
+                              (
+                                (totals.Exchange / totals.Net_Value) *
+                                100
+                              ).toFixed(2)
+                          }}%</span>
+                        <span v-else class="caption ml-2 pa-1 rounded-lg"
+                          style="background-color: #ffeeee; color: #e12626">-{{
+                              (
+                                (totals.Exchange / totals.Net_Value) *
+                                100
+                              ).toFixed(2)
+                          }}%</span></span>
+                    </p>
+                  </v-col>
+                </v-row>
+              </v-col>
+
+              <v-col cols="12">
+                <v-row no-gutters>
+                  <v-col cols="5">
+                    <p class="caption txtcapsty">ToDay's P&L</p>
+                  </v-col>
+                  <v-col cols="7">
+                    <!-- <p class="ctnbtl body-1 text-right" style="line-height: 28px; color: #505359">
+                      21,852.85<span class="overline ml-2 pa-1 rounded-lg"
+                        style="background-color: #ffeeee; color: #e12626">-0.23%</span>
+                    </p> -->
+                    <p class="ctnbtl sumval mb-0 text-right" style="line-height: 28px; color: #505359">
+                      {{ totals.pnlval }}
+                      <span class="caption ml-2 pa-1 rounded-lg" style="
+                          background-color: rgb(135, 139, 147, 0.1);
+                          color: rgb(135, 139, 147);
+                        " v-if="totals.pnlval == 0">0.00%</span>
+                      <span v-else>
+                        <span v-if="totals.pnlval > 0" class="caption ml-2 pa-1 rounded-lg"
+                          style="background-color: #eeffed; color: #34a853">+{{
+                              ((totals.pnlval / totals.Net_Value) * 100).toFixed(2)
+                          }}%</span>
+                        <span v-else class="caption ml-2 pa-1 rounded-lg"
+                          style="background-color: #ffeeee; color: #e12626">{{
+                              ((totals.pnlval / totals.Net_Value) * 100).toFixed(2)
+                          }}%</span></span>
+                    </p>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-card>
+
+        <v-card outlined class="d-none d-md-flex elevation-0 rounded-lg mt-4">
+          <v-row no-gutters>
+            <v-col cols="3" sm="6" md="3">
+              <div class="pa-4">
+                <p class="caption txtcapsty">Total investment</p>
+                <p class="ctnbtl sumval mb-0" style="line-height: 28px; color: #505359">
+                  {{ Math.abs(totals.Net_Value).toFixed(2) }}
+                </p>
+              </div>
+            </v-col>
+            <v-divider class="d-none d-md-flex" vertical></v-divider>
+            <v-col cols="3" sm="6" md="3">
+              <div class="pa-4">
+                <p class="caption txtcapsty">Holdings Value</p>
+                <p class="ctnbtl sumval mb-0" style="line-height: 28px; color: #505359">
+                  {{ totals.BuyOrSell }}
+                </p>
+              </div>
+            </v-col>
+            <v-divider class="d-none d-md-flex" vertical></v-divider>
+            <v-col cols="3" sm="6" md="3">
+              <div class="pa-4">
+                <p class="caption txtcapsty">Total P&L</p>
+                <p class="ctnbtl sumval mb-0" style="line-height: 28px; color: #505359">
+                  {{ totals.Exchange }}
+                  <span class="caption ml-2 pa-2 rounded-lg"
+                    style="background-color: rgb(135, 139, 147, 0.1);color: rgb(135, 139, 147);"
+                    v-if="totals.Exchange == 0">0.00%</span>
+                  <span v-else>
+                    <span v-if="totals.Exchange > 0" class="caption ml-2 pa-2 rounded-lg"
+                      style="background-color: #eeffed; color: #34a853">+{{
+                          ((totals.Exchange / totals.Net_Value) * 100).toFixed(2)
+                      }}%</span>
+                    <span v-else class="caption ml-2 pa-2 rounded-lg"
+                      style="background-color: #ffeeee; color: #e12626">{{
+                          ((totals.Exchange / totals.Net_Value) * 100).toFixed(2)
+                      }}%</span></span>
+                </p>
+              </div>
+            </v-col>
+            <v-divider class="d-none d-md-flex" vertical></v-divider>
+            <v-col cols="3" sm="6" md="3">
+              <div class="pa-4">
+                <p class="caption txtcapsty">ToDay's P&L</p>
+                <!-- <p class="ctnbtl sumval mb-0" style="line-height: 28px; color: #505359">
+                  21,852<small>.85</small><span class="caption ml-2 pa-2 rounded-lg"
+                    style="background-color: #ffeeee; color: #e12626">-0.23%</span>
+                </p> -->
+
+                <p class="ctnbtl sumval mb-0" style="line-height: 28px; color: #505359">
+                  {{ totals.pnlval }}
+                  <span class="caption ml-2 pa-2 rounded-lg" style="background-color: rgb(135, 139, 147, 0.1);
+                      color: rgb(135, 139, 147);
+                    " v-if="totals.pnlval == 0">0.00%</span>
+                  <span v-else>
+                    <span v-if="totals.pnlval > 0" class="caption ml-2 pa-2 rounded-lg"
+                      style="background-color: #eeffed; color: #34a853">+{{
+                          ((totals.pnlval / totals.Net_Value) * 100).toFixed(2)
+                      }}%</span>
+                    <span v-else class="caption ml-2 pa-2 rounded-lg"
+                      style="background-color: #ffeeee; color: #e12626">{{
+                          ((totals.pnlval / totals.Net_Value) * 100).toFixed(2)
+                      }}%</span></span>
+                </p>
+              </div>
+            </v-col>
+          </v-row>
+        </v-card>
+
+        <div class="mt-2 mt-sm-0 mt-md-0">
+          <v-toolbar color="transparent" class="elevation-0 px-0 toolbar">
+            <v-col cols="8" class="px-0">
+              <v-tabs v-model="tab" background-color="transparent" color="#1877F2" active-class="font-weight-bold" flat>
+                <v-tab>Overview</v-tab>
+                <v-tab>Marketcap</v-tab>
+                <v-tab>Duration</v-tab>
+                <v-tab>sector</v-tab>
+                <v-tab>Account</v-tab>
+                <v-tab>Company</v-tab>
+              </v-tabs>
+            </v-col>
+            <v-col class="px-0 d-flex justify-end" cols="4">
+              <div v-if="ovrbtndwn">
+                <vue-json-to-csv :json-data="csvoverview" :csv-title="'overviews.csv'">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv>
+              </div>
+              <div v-if="capbtndwn">
+                <vue-json-to-csv :json-data="csvmc" :csv-title="'Marketcap.csv'">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv>
+              </div>
+              <div v-if="durbtndwn">
+                <!-- <vue-json-to-csv :json-data="csvdur" :csv-title="'Duration.csv'">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv> -->
+              </div>
+              <div v-if="secbtndwn">
+                <vue-json-to-csv :json-data="csvsector" :csv-title="'sector.csv'">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv>
+              </div>
+            </v-col>
+          </v-toolbar>
+
+          <v-tabs-items v-model="tab">
+            <v-tab-item>
+              <div class="mb-4">
+                <!-- <vue-json-to-csv
+                  :json-data="csvoverview"
+                  :csv-title="'overviews.csv'"
+                  :label="{}"
+                >
+                  <v-btn class="ma-0" depressed>Download </v-btn>
+                </vue-json-to-csv> -->
+                <v-data-table :loading="printsumgetloader" @current-items="overviews" mobile-breakpoint fixed-header
+                  disable-sort :headers="ovsumhead" :items="tableDataFinal" item-key="FullName" hide-default-footer
+                  style="border: 1px solid #efeef3" class="elevation-0 rounded-lg" :page.sync="page"
+                  :items-per-page="10" @page-count="pageCount = $event">
+                  <template v-slot:[`footer`]>
+                    <v-divider></v-divider>
+                    <div class="text-center py-2">
+                      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                    </div>
+                  </template>
+                  <template v-slot:[`item.FullName`]="{ item }">
+                    {{ item.FullName.match(/\((.*?)\)/)[1] }}
+                  </template>
+                  <template v-slot:[`item.over`]="{ item }">
+                    {{ ((item.Brok - item.close) * item.Quantity).toFixed(2) }}
+                  </template>
+                  <template v-slot:[`item.MarketCap`]="{ item }">
+                    <span style="color: #34a853" v-if="item.MarketCap > 0">+{{ item.MarketCap }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.MarketCap
+                    }}</span>
+                  </template>
+                  <template v-slot:[`item.Exchange`]="{ item }">
+                    <span style="color: #34a853" v-if="item.Exchange > 0">{{
+                        item.Exchange
+                    }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.Exchange
+                    }}</span>
+                  </template>
+                  <template v-if="usertotaldata" v-slot:[`body.append`]>
+                    <tr class="black--text">
+                      <td class="text-left">
+                        <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                          style="background-color: #e8ebed; color: #505359">{{ printsumget.length }} holdings</span>
+                      </td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ Math.abs(totals.Net_Value).toFixed(2) }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ totals.BuyOrSell }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">{{ totals.Exchange }}</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{ totals.Exchange }}</span>
+                        </span>
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00%</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">+{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                        </span>
+                      </td>
+                    </tr>
+                  </template>
+                  <template v-if="usernodata" v-slot:no-data>
+                    <v-col class="mx-auto pa-15">
+                      <v-img class="align-self-stretch mx-auto" width="100px"
+                        :src="require('@/assets/no data folder.svg')" />
+                      <h4>No data available</h4>
+                    </v-col>
+                  </template>
+                </v-data-table>
+              </div>
+            </v-tab-item>
+            <v-tab-item>
+              <div class="mb-4">
+                <!-- <vue-json-to-csv
+                  :json-data="csvmc"
+                  :csv-title="'overviews.csv'"
+                >
+                  <v-btn class="ma-0" depressed>Download </v-btn>
+                </vue-json-to-csv> -->
+                <v-data-table :loading="printsumgetloader" mobile-breakpoint fixed-header disable-sort
+                  :headers="capsumhead" :items="tableDataFinal" item-key="FullName" hide-default-footer
+                  style="border: 1px solid #efeef3" class="capsum elevation-0 rounded-lg" group-by="MarketCapType"
+                  :page.sync="page" :items-per-page="10" @page-count="pageCount = $event">
+                  <template v-slot:[`footer`]>
+                    <v-divider></v-divider>
+                    <div class="text-center py-2">
+                      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                    </div>
+                  </template>
+                  <template v-slot:[`item.FullName`]="{ item }">
+                    {{ item.FullName.match(/\((.*?)\)/)[1] }}
+                  </template>
+                  <template v-slot:[`group.header`]="{ items }">
+                    <td>
+                      <strong>{{ items[0].MarketCapType }}</strong>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </template>
+                  <template v-slot:[`item.MarketCap`]="{ item }">
+                    <span style="color: #34a853" v-if="item.MarketCap > 0">+{{ item.MarketCap }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.MarketCap
+                    }}</span>
+                  </template>
+                  <template v-slot:[`item.Exchange`]="{ item }">
+                    <span style="color: #34a853" v-if="item.Exchange > 0">{{
+                        item.Exchange
+                    }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.Exchange
+                    }}</span>
+                  </template>
+                  <template v-if="usertotaldata" v-slot:[`body.append`]>
+                    <tr class="black--text">
+                      <td class="text-left">
+                        <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                          style="background-color: #e8ebed; color: #505359">{{ printsumget.length }} holdings</span>
+                      </td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ Math.abs(totals.Net_Value).toFixed(2) }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ totals.BuyOrSell }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">{{ totals.Exchange }}</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{ totals.Exchange }}</span>
+                        </span>
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00%</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">+{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                        </span>
+                      </td>
+                    </tr>
+                  </template>
+                  <template v-if="usernodata" v-slot:no-data>
+                    <v-col class="mx-auto pa-15">
+                      <v-img class="align-self-stretch mx-auto" width="100px"
+                        :src="require('@/assets/no data folder.svg')" />
+                      <h4>No data available</h4>
+                    </v-col>
+                  </template>
+                </v-data-table>
+              </div>
+            </v-tab-item>
+            <v-tab-item>
+              <div class="mb-4">
+                <v-data-table :loading="printsumgetloader" mobile-breakpoint fixed-header disable-sort
+                  :headers="dursumhead" :items="tableDataFinal" item-key="FullName" hide-default-footer
+                  style="border: 1px solid #efeef3" class="capsum elevation-0 rounded-lg" group-by="DurationTerm"
+                  :page.sync="page" :items-per-page="10" @page-count="pageCount = $event">
+                  <template v-slot:[`footer`]>
+                    <v-divider></v-divider>
+                    <div class="text-center py-2">
+                      <v-pagination v-model="page" :length="pageCount" class="elevation-0"></v-pagination>
+                    </div>
+                  </template>
+                  <template v-slot:[`item.FullName`]="{ item }">
+                    {{ item.FullName.match(/\((.*?)\)/)[1] }}
+                  </template>
+                  <template v-slot:[`item.Duration`]="{ item }">
+                    <v-card outlined class="elevation-0 rounded pa-1" height="60%" width="100%">
+                      <v-list-item class="pl-2 pr-0">
+                        <v-list-item-icon class="ma-0 mt-1">
+                          <p class="mb-0">
+                            <img src="@/assets/Durationicon.svg" width="18px">
+                            <span class="font-weight-bold pl-2">{{ item.Duration }}</span>
+                          </p>
+                        </v-list-item-icon>
+                      </v-list-item>
+                    </v-card>
+                  </template>
+                  <template v-slot:[`group.header`]="{ items }">
+                    <td>
+                      <strong>{{ items[0].DurationTerm }}</strong>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </template>
+                  <template v-slot:[`item.MarketCap`]="{ item }">
+                    <span style="color: #34a853" v-if="item.MarketCap > 0">+{{ item.MarketCap }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.MarketCap
+                    }}</span>
+                  </template>
+                  <template v-slot:[`item.Exchange`]="{ item }">
+                    <span style="color: #34a853" v-if="item.Exchange > 0">{{
+                        item.Exchange
+                    }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.Exchange
+                    }}</span>
+                  </template>
+                  <template v-if="usertotaldata" v-slot:[`body.append`]>
+                    <tr class="black--text">
+                      <td class="text-left">
+                        <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                          style="background-color: #e8ebed; color: #505359">{{ printsumget.length }} holdings</span>
+                      </td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ Math.abs(totals.Net_Value).toFixed(2) }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ totals.BuyOrSell }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">{{ totals.Exchange }}</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{ totals.Exchange }}</span>
+                        </span>
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00%</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">+{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                        </span>
+                      </td>
+                    </tr>
+                  </template>
+                  <template v-if="usernodata" v-slot:no-data>
+                    <v-col class="mx-auto pa-15">
+                      <v-img class="align-self-stretch mx-auto" width="100px"
+                        :src="require('@/assets/no data folder.svg')" />
+                      <h4>No data available</h4>
+                    </v-col>
+                  </template>
+                </v-data-table>
+              </div>
+            </v-tab-item>
+            <v-tab-item>
+              <div class="mb-4">
+                <!-- <vue-json-to-csv
+                  :json-data="csvsector"
+                  :csv-title="'overviews.csv'"
+                >
+                  <v-btn class="ma-0" depressed>Download </v-btn>
+                </vue-json-to-csv> -->
+                <v-data-table :loading="printsumgetloader" mobile-breakpoint fixed-header disable-sort
+                  :headers="secsumhead" :items="tableDataFinal" item-key="FullName" hide-default-footer
+                  style="border: 1px solid #efeef3" class="capsum elevation-0 rounded-lg" group-by="sector"
+                  :page.sync="page" :items-per-page="10" @page-count="pageCount = $event">
+                  <template v-slot:[`footer`]>
+                    <v-divider></v-divider>
+                    <div class="text-center py-2">
+                      <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                    </div>
+                  </template>
+                  <template v-slot:[`item.FullName`]="{ item }">
+                    {{ item.FullName.match(/\((.*?)\)/)[1] }}
+                  </template>
+                  <template v-slot:[`group.header`]="{ items }">
+                    <td>
+                      <strong>{{ items[0].sector }}</strong>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </template>
+                  <template v-slot:[`item.MarketCap`]="{ item }">
+                    <span style="color: #34a853" v-if="item.MarketCap > 0">+{{ item.MarketCap }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.MarketCap
+                    }}</span>
+                  </template>
+                  <template v-slot:[`item.Exchange`]="{ item }">
+                    <span style="color: #34a853" v-if="item.Exchange > 0">{{
+                        item.Exchange
+                    }}</span>
+                    <span style="color: #e12626" v-else>{{
+                        item.Exchange
+                    }}</span>
+                  </template>
+                  <template v-if="usertotaldata" v-slot:[`body.append`]>
+                    <tr class="black--text">
+                      <td class="text-left">
+                        <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                          style="background-color: #e8ebed; color: #505359">{{ printsumget.length }} holdings</span>
+                      </td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td>{{ totals.none }}</td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ Math.abs(totals.Net_Value).toFixed(2) }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        {{ totals.BuyOrSell }}
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">{{ totals.Exchange }}</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{ totals.Exchange }}</span>
+                        </span>
+                      </td>
+                      <td class="subtitle-1 text-right font-weight-medium">
+                        <span v-if="totals.Exchange == 0">0.00%</span>
+                        <span v-else>
+                          <span class="font-weight-medium pa-1 rounded" v-if="totals.Exchange > 0"
+                            style="background-color: #eeffed; color: #34a853">+{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                          <span class="font-weight-medium pa-1 rounded" v-else
+                            style="background-color: #ffeeee; color: #e12626">{{
+                                (
+                                  (totals.Exchange / totals.Net_Value) *
+                                  100
+                                ).toFixed(2)
+                            }}%</span>
+                        </span>
+                      </td>
+                    </tr>
+                  </template>
+                  <template v-if="usernodata" v-slot:no-data>
+                    <v-col class="mx-auto pa-15">
+                      <v-img class="align-self-stretch mx-auto" width="100px"
+                        :src="require('@/assets/no data folder.svg')" />
+                      <h4>No data available</h4>
+                    </v-col>
+                  </template>
+                </v-data-table>
+              </div>
+            </v-tab-item>
+            <v-tab-item>
+              <HoldlingAccount />
+            </v-tab-item>
+            <v-tab-item>
+              <HoldlingCompany />
+            </v-tab-item>
+          </v-tabs-items>
+        </div>
+      </div>
+    </v-container>
+  </v-app>
+</template>
+
+<script>
+import HoldlingAccount from "../portfolio_screens/HoldlingAccount.vue";
+import HoldlingCompany from '../portfolio_screens/HoldingCompany.vue'
+
+
+import { apiurl } from "../../apiUrl";
+import axios from "axios";
+import VueJsonToCsv from "vue-json-to-csv";
+export default {
+  data() {
+    return {
+      page: 1,
+      pageCount: 0,
+
+      usertotaldata: true,
+      usernodata: false,
+      ovrbtndwn: false,
+      capbtndwn: false,
+      durbtndwn: false,
+      secbtndwn: false,
+      tab: 0,
+      holdingdetails: [],
+      sumget: [],
+      dataget: [],
+      FullName: "",
+      clsval: [],
+      closepnl: 0,
+      printsumget: [],
+      printsumgetloader: true,
+      tokengetdata: [],
+      tableDataFinal: [],
+      tradedetails: [],
+      overviewItems: [],
+      csvoverview: [],
+      csvmc: [],
+      csvsector: [],
+    };
+  },
+  methods: {
+    overviews(val) {
+      this.overviewItems = val;
+      console.log("overviewItems", this.overviewItems.length)
+
+      if (this.overviewItems.length > 0) {
+        this.printsumgetloader = false;
+      }
+    },
+  },
+
+  mounted() {
+    var userBrokerClientId = localStorage.getItem("client-id");
+    var gauthclientseassion = localStorage.clientsessionstore
+    var getTokendata = localStorage.getItem("getTokendata");
+
+    var axiosThis = this;
+    var data = JSON.stringify({
+      // clientid: "ZE1A57",
+      clientid: userBrokerClientId,
+
+    });
+
+    var config = {
+      method: "post",
+      url: `${apiurl}/holdingDetails`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': gauthclientseassion
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log("sumget", response);
+        axiosThis.holdingdetails = response.data.data;
+        console.log("response", response.data.data);
+        if (response.data.msg == "No Data Available") {
+          axiosThis.usernodata = true;
+          axiosThis.printsumgetloader = false;
+          axiosThis.usertotaldata = false;
+        }
+        console.log("holdingdetails", axiosThis.holdingdetails);
+        for (var i = 0; i < axiosThis.holdingdetails.length; i++) {
+          axiosThis.sumget.push(axiosThis.holdingdetails[i].Summary);
+          axiosThis.dataget.push(axiosThis.holdingdetails[i].Data);
+          console.log("sumget", axiosThis.sumget);
+        }
+
+        for (var l = 0; l < axiosThis.sumget.length; l++) {
+          var sumdetails = axiosThis.sumget[l];
+          if (sumdetails.Quantity > 0) {
+            // console.log("sundd", sumdetails);
+
+            sumdetails.Avg_Price = Math.abs(sumdetails.Avg_Price.toFixed(2));
+            sumdetails.Net_Value = Math.abs(sumdetails.Net_Value.toFixed(2));
+
+            // console.log("tokk", axiosThis.tokengetdata);
+            axiosThis.printsumget.push(sumdetails);
+
+            var data = JSON.stringify({
+              userId: "ZP00172",
+              scripList: "nse_cm|212,nse_cm|" + sumdetails.token,
+            });
+
+            var tokenconfig = {
+              method: "post",
+              url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+              headers: {
+                Authorization: `Bearer ZP00172 ${getTokendata}`,
+                "Content-Type": "application/json",
+              },
+              data: data,
+            };
+
+            axios(tokenconfig)
+              .then(function (response) {
+                // console.log("MARKETwatch", response.data[1]);
+                axiosThis.tokengetdata.push(response.data[1]);
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          } if (sumdetails.Quantity == 0) {
+            axiosThis.usernodata = true;
+            axiosThis.printsumgetloader = false;
+          }
+        }
+
+        setTimeout(function () {
+          // console.log(axiosThis.tokengetdata, "trddtl_s@@@@@@@@@@@@@4",axiosThis.printsumget);
+          for (var o = 0; o < axiosThis.printsumget.length; o++) {
+            for (var w = 0; w < axiosThis.printsumget.length; w++) {
+              // console.log(axiosThis.printsumget[o].Symbol,"|", axiosThis.tokengetdata[w].symbolname);
+              if (
+                axiosThis.printsumget[o].Symbol ==
+                axiosThis.tokengetdata[w].symbolname
+              ) {
+                console.log(
+                  axiosThis.printsumget[o].Symbol,
+                  "|",
+                  axiosThis.tokengetdata[w].ltp
+                );
+
+                axiosThis.printsumget[o].Brok = Number(
+                  axiosThis.tokengetdata[w].ltp
+                );
+                axiosThis.printsumget[o].BuyOrSell = Number(
+                  (
+                    axiosThis.printsumget[o].Quantity *
+                    axiosThis.printsumget[o].Brok
+                  ).toFixed(2)
+                );
+                axiosThis.printsumget[o].Exchange = Number(
+                  (
+                    axiosThis.printsumget[o].BuyOrSell -
+                    axiosThis.printsumget[o].Net_Value
+                  ).toFixed(2)
+                );
+                axiosThis.printsumget[o].MarketCap = Number(
+                  (
+                    (axiosThis.printsumget[o].Exchange /
+                      axiosThis.printsumget[o].Net_Value) *
+                    100
+                  ).toFixed(2)
+                );
+                if (axiosThis.printsumget[o].Duration >= 365) {
+                  axiosThis.printsumget[o]["DurationTerm"] = "Long Term Holdings";
+                } else {
+                  axiosThis.printsumget[o]["DurationTerm"] = "Short Term Holdings";
+                }
+
+                axiosThis.printsumget[o]["close"] = Number(
+                  axiosThis.tokengetdata[w].close
+                );
+                axiosThis.printsumget[o]["pnlval"] = (axiosThis.printsumget[o].Brok - axiosThis.tokengetdata[w].close) * axiosThis.printsumget[o].Quantity;
+
+                //   // console.log(axiosThis.tokengetdata[o], "tokengetdata")
+                axiosThis.tableDataFinal.push(axiosThis.printsumget[o]);
+
+                axiosThis.clsval.push(axiosThis.tableDataFinal[o].close);
+                // console.log(
+                //   axiosThis.printsumget[o],
+                //   "|",
+                //   axiosThis.tableDataFinal[o]
+                // );
+              }
+            }
+          }
+          for (var c = 0; c < axiosThis.clsval.length; c++) {
+            axiosThis.closepnl += axiosThis.clsval[c];
+            console.log("closepnl", axiosThis.closepnl);
+          }
+          axiosThis.tableDataFinal.map((overview) => {
+            var symbolname = overview.FullName;
+            var symbol = symbolname.match(/\((.*?)\)/);
+            // var x=[];
+
+            axiosThis.csvoverview.push({
+              Company: symbol[1],
+              Qty: overview.Quantity,
+              "Buy avg.": overview.Avg_Price,
+              LTP: overview.Brok,
+              "Buy value": overview.Net_Value,
+              "Present value": overview.BuyOrSell,
+              "P&L": overview.Exchange,
+              "P&L_change":
+                overview.MarketCap > 0
+                  ? `${"+"}${overview.MarketCap}`
+                  : `${"-"}${overview.Marketcap}`,
+            });
+          });
+          axiosThis.csvoverview.push({
+            Company: `${axiosThis.printsumget.length}${" holdings"}`,
+            Qty: " ",
+            "Buy avg.": " ",
+            LTP: " ",
+            "Buy value": Math.abs(axiosThis.totals.Net_Value).toFixed(2),
+            "Present value": axiosThis.totals.BuyOrSell,
+            "P&L": axiosThis.totals.Exchange,
+            "P&L_change": `${"+"}${(
+              (axiosThis.totals.Exchange / axiosThis.totals.Net_Value) *
+              100
+            ).toFixed(2)}${"%"}`,
+          });
+          axiosThis.printsumget.map((mcap) => {
+            var name = mcap.FullName.match(/\((.*?)\)/)[1];
+            // console.log(name);
+            axiosThis.csvmc.push(
+              {
+                Company: mcap.MarketCapType,
+                Qty: "",
+                "Buy avg.": " ",
+                LTP: " ",
+                "Buy value": " ",
+                "Present value": " ",
+                "P&L": "",
+                "P&L_change": "",
+              },
+              {
+                Company: name,
+                Qty: mcap.Quantity,
+                "Buy avg.": mcap.Avg_Price,
+                LTP: mcap.Brok,
+                "Buy value": mcap.Net_Value,
+                "Present value": mcap.BuyOrSell,
+                "P&L": mcap.Exchange,
+                "P&L_change":
+                  mcap.MarketCap > 0
+                    ? `${"+"}${mcap.MarketCap}`
+                    : `${"-"}${mcap.Marketcap}`,
+              }
+            );
+            axiosThis.csvsector.push(
+              {
+                Company: mcap.sector,
+                Qty: "",
+                "Buy avg.": " ",
+                LTP: " ",
+                "Buy value": " ",
+                "Present value": " ",
+                "P&L": "",
+                "P&L_change": "",
+              },
+              {
+                Company: name,
+                Qty: mcap.Quantity,
+                "Buy avg.": mcap.Avg_Price,
+                LTP: mcap.Brok,
+                "Buy value": mcap.Net_Value,
+                "Present value": mcap.BuyOrSell,
+                "P&L": mcap.Exchange,
+                "P&L_change":
+                  mcap.MarketCap > 0
+                    ? `${"+"}${mcap.MarketCap}`
+                    : `${"-"}${mcap.Marketcap}`,
+              }
+            );
+          });
+          axiosThis.csvmc.push({
+            Company: `${axiosThis.printsumget.length}${" holdings"}`,
+            Qty: " ",
+            "Buy avg.": " ",
+            LTP: " ",
+            "Buy value": Math.abs(axiosThis.totals.Net_Value).toFixed(2),
+            "Present value": axiosThis.totals.BuyOrSell,
+            "P&L": axiosThis.totals.Exchange,
+            "P&L_change": `${"+"}${(
+              (axiosThis.totals.Exchange / axiosThis.totals.Net_Value) *
+              100
+            ).toFixed(2)}${"%"}`,
+          });
+          axiosThis.csvsector.push({
+            Company: `${axiosThis.printsumget.length}${" holdings"}`,
+            Qty: " ",
+            "Buy avg.": " ",
+            LTP: " ",
+            "Buy value": Math.abs(axiosThis.totals.Net_Value).toFixed(2),
+            "Present value": axiosThis.totals.BuyOrSell,
+            "P&L": axiosThis.totals.Exchange,
+            "P&L_change": `${"+"}${(
+              (axiosThis.totals.Exchange / axiosThis.totals.Net_Value) * 100).toFixed(2)}${"%"}`,
+          });
+          // console.log("printsumget", axiosThis.printsumget);
+          console.log("axiosthis.csusector", axiosThis.csvsector)
+          //code goes here
+        }, 1000);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  },
+  components: { HoldlingAccount, HoldlingCompany, "vue-json-to-csv": VueJsonToCsv },
+  computed: {
+    totals() {
+      const totals = this.tableDataFinal.reduce(
+        (acc, d) => {
+          acc.Quantity += d.Quantity;
+          acc.Avg_Price += d.Avg_Price;
+          acc.Net_Value += d.Net_Value;
+          acc.Brok += d.Brok;
+          acc.close += d.close;
+          acc.BuyOrSell += d.BuyOrSell;
+          acc.Exchange += d.Exchange;
+          acc.pnlval += d.pnlval;
+          if (this.tab == 0) {
+            this.ovrbtndwn = true;
+            this.capbtndwn = false;
+            this.durbtndwn = false;
+            this.secbtndwn = false;
+          }
+          if (this.tab == 1) {
+            this.capbtndwn = true;
+            this.ovrbtndwn = false;
+            this.durbtndwn = false;
+            this.secbtndwn = false;
+          }
+          if (this.tab == 2) {
+            this.durbtndwn = true;
+            this.ovrbtndwn = false;
+            this.capbtndwn = false;
+            this.secbtndwn = false;
+          }
+          if (this.tab == 3) {
+            this.secbtndwn = true;
+            this.ovrbtndwn = false;
+            this.capbtndwn = false;
+            this.durbtndwn = false;
+          }
+          if (this.tab == 4 ) {
+            this.secbtndwn = false;
+            this.ovrbtndwn = false;
+            this.capbtndwn = false;
+            this.durbtndwn = false;
+          }
+          if (this.tab == 5 ) {
+            this.secbtndwn = false;
+            this.ovrbtndwn = false;
+            this.capbtndwn = false;
+            this.durbtndwn = false;
+          }
+          return acc;
+        },
+        {
+          Quantity: 0,
+          Avg_Price: 0.00,
+          Net_Value: 0.00,
+          Brok: 0.00,
+          BuyOrSell: 0.00,
+          Exchange: 0.00,
+          pnlval: 0.00,
+          none: "",
+        }
+      );
+      totals.Avg_Price = totals.Avg_Price.toFixed(2);
+      totals.Net_Value = totals.Net_Value.toFixed(2);
+      totals.Brok = totals.Brok.toFixed(2);
+      totals.BuyOrSell = totals.BuyOrSell.toFixed(2);
+      totals.Exchange = totals.Exchange.toFixed(2);
+      totals.pnlval = totals.pnlval.toFixed(2);
+      return totals;
+    },
+    secsumhead() {
+      return [
+        {
+          text: "Company",
+          value: "FullName",
+          align: "left",
+          filter: (f) => {
+            return (f + "")
+              .toUpperCase()
+              .includes(this["FullName"].toUpperCase());
+          },
+        },
+        { text: "Qty", value: "Quantity", align: "right" },
+        { text: "Buy avg.", value: "Avg_Price", align: "right" },
+        { text: "LTP", value: "Brok", align: "right" },
+        { text: "Buy value", value: "Net_Value", align: "right" },
+        { text: "Present value", value: "BuyOrSell", align: "right" },
+        { text: "P&L", value: "Exchange", align: "right" },
+        { text: "P&L change", value: "MarketCap", align: "right" },
+        { text: "sector", value: "sector" },
+      ];
+    },
+    dursumhead() {
+      return [
+        {
+          text: "Company",
+          value: "FullName",
+          align: "left",
+          filter: (f) => {
+            return (f + "")
+              .toUpperCase()
+              .includes(this["FullName"].toUpperCase());
+          },
+        },
+        { text: "", value: "Duration", align: "centre" },
+        { text: "Qty", value: "Quantity", align: "right" },
+        { text: "Buy avg.", value: "Avg_Price", align: "right" },
+        { text: "LTP", value: "Brok", align: "right" },
+        { text: "Buy value", value: "Net_Value", align: "right" },
+        { text: "Present_value", value: "BuyOrSell", align: "right" },
+        { text: "P&L", value: "Exchange", align: "right" },
+        { text: "P&L change", value: "MarketCap", align: "right" },
+
+        // { text: "Duration", value: "" },
+      ];
+    },
+    capsumhead() {
+      return [
+        {
+          text: "Company",
+          value: "FullName",
+          align: "left",
+          filter: (f) => {
+            return (f + "")
+              .toUpperCase()
+              .includes(this["FullName"].toUpperCase());
+          },
+        },
+        { text: "Qty", value: "Quantity", align: "right" },
+        { text: "Buy avg.", value: "Avg_Price", align: "right" },
+        { text: "LTP", value: "Brok", align: "right" },
+        { text: "Buy value", value: "Net_Value", align: "right" },
+        { text: "Present value", value: "BuyOrSell", align: "right" },
+        { text: "P&L", value: "Exchange", align: "right" },
+        { text: "P&L change", value: "MarketCap", align: "right" },
+        { text: "MarketCap", value: "MarketCapType" },
+      ];
+    },
+    ovsumhead() {
+      return [
+        {
+          text: "Company",
+          value: "FullName",
+          align: "left",
+          filter: (f) => {
+            return (f + "")
+              .toUpperCase()
+              .includes(this["FullName"].toUpperCase());
+          },
+        },
+        { text: "Qty", value: "Quantity", align: "right" },
+        { text: "Buy avg.", value: "Avg_Price", align: "right" },
+        { text: "LTP", value: "Brok", align: "right" },
+        { text: "Buy value", value: "Net_Value", align: "right" },
+        { text: "Present value", value: "BuyOrSell", align: "right" },
+        { text: "P&L", value: "Exchange", align: "right" },
+        { text: "P&L change", value: "MarketCap", align: "right" },
+        // { text: "close", value: "close", align: "right" },
+        // { text: "ltp-close*qty", value: "over", align: "right" },
+        // { text: "pnlval", value: "pnlval", align: "right" },
+      ];
+    },
+  },
+};
+</script>
+<style>
+.txtcapsty {
+  color: #ff8d24;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.toolbar .v-toolbar__content {
+  padding: 0 !important;
+}
+
+tr.v-row-group__header {
+  background-color: #fffaf6 !important;
+  color: #ff8d24 !important;
+  font-weight: 700;
+}
+
+.capsum .v-btn.v-btn--icon,
+.tbhold .v-btn.v-btn--icon {
+  display: none !important;
+}
+
+.v-pagination__navigation,
+.v-pagination__item,
+.v-pagination__item--active {
+  box-shadow: none !important;
+}
+</style>

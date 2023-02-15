@@ -1,0 +1,278 @@
+<template>
+    <div>
+        <div>
+            <v-card class="ma-8 pa-4 elevation-0 rounded-lg" outlined>
+                <v-row no-gutters>
+                    <v-col v-for="n in 365" :key="n">
+
+                        <div v-if="n % 11 == 0">
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-card v-bind="attrs" v-on="on" width="4px" color="#34A8539a"
+                                        style="margin: 2px; padding: 6px;" outlined tile>
+                                    </v-card>
+                                </template>
+                                <span>100 profit {{ n }}</span>
+                            </v-tooltip>
+                        </div>
+
+                        <div v-else-if="n % 7 == 0">
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-card v-bind="attrs" v-on="on" width="4px" color="#e126269a"
+                                        style="margin: 2px; padding: 6px;" outlined tile>
+                                    </v-card>
+                                </template>
+                                <span>-76 loss {{ n }}</span>
+                            </v-tooltip>
+                        </div>
+
+                        <v-card width="4px" v-else color="#E8EBED" style="margin: 2px; padding: 6px;" outlined tile>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-card>
+        </div>
+        <calendar-heatmap :values="dataValue" :start-date="2020 - 1 - 1" end-date="2023-1-1" :range-color="color"
+            :vertical="false" :tooltip="true" />
+    </div>
+</template>
+
+<script>
+import { apiurl } from "../../apiUrl";
+import axios from "axios";
+import { CalendarHeatmap } from 'vue-calendar-heatmap';
+export default {
+    components: { CalendarHeatmap },
+    data() {
+        return {
+            dataValue: [],
+            index: [],
+            trimeddata: [],
+            dates: [""],
+            tradedetailsloader: true,
+            datesummary: [],
+            dataget: [],
+            datepl: [],
+            tradedetails: [],
+            summdetails: [],
+            tokengetdata: [],
+            tableDataFinal: [],
+            trddtl_s1: [],
+            datesvalue: [],
+            datevalues: [],
+            x: [],
+            date1: [],
+            pltoken: [],
+            fistvalues: [],
+            shortvalue: [],
+            pldatess: [],
+            plcal: [],
+            plcaldata: [],
+            color: ['#E8EBED', '#e126269a', '#34A8539a'],
+            colors: [],
+            token: [],
+            vuehm: [],
+        }
+    },
+
+    mounted() {
+        var getTokendata = localStorage.getItem("getTokendata")
+
+        this.name = localStorage.decryptedstoredname
+        var axiosThis = this;
+
+        var data = JSON.stringify({
+            clientid: "ZE1A57",
+
+        });
+        var gauthclientseassion = localStorage.clientsessionstore
+        var config = {
+            method: "post",
+            url: `${apiurl}/mtmsummary`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': gauthclientseassion
+            },
+            data: data,
+        };
+
+        axios(config)
+            .then(function (response) {
+                console.log("response", response.data);
+                axiosThis.datesummary = response.data;
+                if (response.data.msg == "No Data Available") {
+                    axiosThis.usernodata = true;
+                    axiosThis.tradedetailsloader = false;
+                    axiosThis.usertotaldata = false;
+                }
+                for (var i = 0; i < axiosThis.datesummary.length; i++) {
+                    axiosThis.dataget.push(axiosThis.datesummary[i]);
+
+                }
+                console.log(axiosThis.dataget)
+                for (var l = 0; l < axiosThis.dataget.length; l++) {
+                    var trddtl_s1s = axiosThis.dataget[l];
+                    console.log("sec index", trddtl_s1s)
+                    for (var [key, value] of Object.entries(trddtl_s1s)) {
+                        console.log("object", trddtl_s1s)
+                        axiosThis.pldatess.push([key]);
+                        console.log("key", axiosThis.pldatess)
+                        var tk = value
+                        console.log("tk", tk)
+                        for (var x in tk) {
+                            var trddtl_s2 = tk[x]
+                            console.log("allday", trddtl_s2)
+
+                            axiosThis.tradedetails.push(trddtl_s2);
+                        }
+                    }
+                    axiosThis.token.push("nse_cm" + '|' + trddtl_s2.token)
+                }
+                var tokes = axiosThis.token.join()
+                console.log("tokes", tokes)
+                var data = JSON.stringify({
+                    userId: "ZP00172",
+                    scripList: tokes,
+                });
+
+                var tokenconfig = {
+                    method: "post",
+                    url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+                    headers: {
+                        Authorization: `Bearer ZP00172 ${getTokendata}`,
+                        "Content-Type": "application/json",
+                    },
+                    data: data,
+                };
+
+                axios(tokenconfig)
+                    .then(function (response) {
+                        console.log("dataget2", response.data);
+                        var datas = {}
+
+                        for (var l in response.data) {
+                            datas = response.data[l]
+                            console.log(datas.token, datas)
+                            // for(var x ; x < datas.length ; x++){
+                            axiosThis.tokengetdata.push(datas);
+                            // }
+                            console.log("trddtl_s3.token sa", axiosThis.tokengetdata.token);
+                        }
+
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+                setTimeout(function () {
+                    // console.table("dataget",axiosThis.tokengetdata, "a",axiosThis.tradedetails);
+
+                    for (var o = 0; o < axiosThis.tradedetails.length; o++) {
+                        for (var w = 0; w < axiosThis.tradedetails.length; w++) {
+                            for (var x in axiosThis.tokengetdata) {
+                                var tokens = axiosThis.tokengetdata[x].token
+                                // console.log("valeus",tokens)
+                                var ltps = axiosThis.tokengetdata[x].ltp
+
+                                if (
+                                    axiosThis.tradedetails[o].token ==
+                                    tokens
+                                ) {
+                                    axiosThis.tradedetails[o]["Ltp"] = Number(
+                                        ltps
+                                    );
+                                    axiosThis.tradedetails[o]["Net_rate"] =
+                                        axiosThis.tradedetails[o].Net_Value /
+                                        axiosThis.tradedetails[o].Quantity;
+                                    axiosThis.tradedetails[o]["Mtm"] =
+                                        (axiosThis.tradedetails[o].Ltp -
+                                            axiosThis.tradedetails[o].Net_rate) *
+                                        axiosThis.tradedetails[o].Quantity;
+                                    // console.log("o",(axiosThis.tradedetails[o].Ltp -
+                                    //     axiosThis.tradedetails[o].Net_rate) *
+                                    //   axiosThis.tradedetails[o].Quantity)
+                                }
+                            }
+                            //   console.log(axiosThis.tradedetails, "summDataFinal");
+                        }
+                        var datedatas1 = axiosThis.tradedetails[o];
+                        axiosThis.tableDataFinal.push(datedatas1)
+
+                        var short = 0;
+                        if (axiosThis.tradedetails[o].Quantity > 0) {
+                            short = (axiosThis.tradedetails[o].Ltp - axiosThis.tradedetails[o].Net_Price)
+                            // console.log("+",short)
+                        } else if (axiosThis.tradedetails[o].Quantity < 0) {
+                            short = (axiosThis.tradedetails[o].Net_Price - axiosThis.tradedetails[o].Ltp)
+                            // console.log("-",short)
+                        } else if (axiosThis.tradedetails[o].Quantity == 0) {
+                            var sellvalue = axiosThis.tradedetails[o].Sell_Quantity * axiosThis.tradedetails[o].Sell_Price
+                            var Buyvalue = axiosThis.tradedetails[o].Buy_Quantity * axiosThis.tradedetails[o].Buy_Price
+
+                            short = (sellvalue - Buyvalue);
+                            console.log("0", short)
+                        }
+                        // }
+                        console.log("shortqq", short, axiosThis.tradedetails[o].Trade_Date)
+                        axiosThis.x.push({ "date": datedatas1.Trade_Date.slice(-4) + '-' + datedatas1.Trade_Date.slice(3, 5) + "-" + datedatas1.Trade_Date.slice(0, 2), "count": short })
+                    }
+                    console.log("ssss x", axiosThis.x)
+
+                    var removesamedate = Object.values(axiosThis.x.reduce((object, item) => {
+                        var key = item.date
+                        if (!object[key]) {
+                            object[key] = Object.assign(item)
+                            console.log("ssss if", object[key], item)
+                        }
+                        else {
+                            object[key].count += Object.assign(item.count)
+                            console.log("ssss if", object[key].count, item.count)
+
+                        }
+                        return object
+                    }, {}))
+                    axiosThis.dataValue.push(removesamedate);
+                    console.log("dataValue", removesamedate)
+                    console.log("dataValue", axiosThis.dataValue[0])
+                    for (var z = 0; z < removesamedate.length; z++) {
+                        console.log("dataValue z", removesamedate[z].date, z)
+
+                        if (removesamedate[z].date.sort()) {
+                            console.log("dataValue zsotr", removesamedate[z].date)
+                        }
+           
+                    }
+                }, 1000);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        // for (var z = 0; z < axiosThis.dataValue.length; z++) {
+        //     console.log("dataValue", axiosThis.dataValue)
+
+        // }
+    },
+
+    methods: {
+
+        getColorIndex(value) {
+            // console.log("getColorIndex",value) 
+
+            if (value == null || value === undefined) {
+                return ['#E8EBED']
+            } else if (value < 0) {
+                return ['#e126269a']
+
+            } else if (value > 0) {
+                return ['#34A8539a']
+
+            }
+
+        }
+
+    }
+
+
+}
+</script>

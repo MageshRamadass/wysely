@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">wysely</string>
+    <string name="title_activity_main">wysely</string>
+    <string name="package_name">com.wysely.app</string>
+    <string name="custom_url_scheme">com.wysely.app</string>
+</resources>

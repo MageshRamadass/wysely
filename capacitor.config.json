@@ -1,0 +1,6 @@
+{
+  "appId": "com.wysely.app",
+  "appName": "wysely",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

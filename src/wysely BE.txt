@@ -1,0 +1,8 @@
+
+// wysely BE run code
+**
+venv\Scripts\activate
+py apply.py
+**
+
+deactivate

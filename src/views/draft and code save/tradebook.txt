@@ -1,0 +1,476 @@
+<template>
+  <v-app>
+    <v-container class="pa-0 pa-sm-3 pa-md-3">
+      <div class="pt-16 pa-6 pa-sm-4 pa-md-4">
+        <!-- <v-row>
+          <v-col cols="12" sm="12" md="6">
+            <v-row>
+              <v-col cols="6">
+                <p class="lstctntit headline mb-1">Tradebook</p>
+              </v-col>
+              <v-col cols="6" class="d-md-none text-right px-0">
+                <v-btn
+                  style="text-transform: capitalize"
+                  class="elevation-0"
+                  small
+                  color="#F9FBFC"
+                >
+                  <v-icon size="15">mdi-format-align-bottom</v-icon>Filter
+                  actions
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <p class="body-1 mb-0 mb-sm-2 mb-md-2" color="#878B93">
+              All your trade activity based on dates
+            </p>
+          </v-col>
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="6" sm="2" md="2">
+            <v-select
+              prepend-inner-icon="mdi-chart-arc"
+              append-icon="mdi-chevron-down"
+              class="rounded-lg"
+              color="gray"
+              dense
+              label="Select Segment"
+              single-line
+              outlined
+            ></v-select>
+          </v-col>
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="6" sm="2" md="2">
+            <v-text-field
+              v-model="FullName"
+              dense
+              color="gray"
+              outlined
+              class="rounded-lg"
+              label="Search symbol"
+              prepend-inner-icon="mdi-magnify"
+            ></v-text-field>
+          </v-col>
+          <v-col class="pl-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <v-btn class="font-weight-black" text color="#1877F2">Filter activity</v-btn> 
+            <date-picker
+              v-model="dates"
+              range
+              placeholder="Select date "
+              :lang="lang"
+              class="mt-5"
+              @change="getDate(), apicall()"
+            >
+            </date-picker>
+          </v-col>
+        </v-row> -->
+        <v-row>
+          <v-col cols="12" sm="12" md="6">
+            <v-row>
+              <v-col cols="6">
+                <p class="lstctntit headline mb-1">Tradebook</p>
+              </v-col>
+              <v-col cols="6" class="d-md-none text-right px-0">
+                <v-btn style="text-transform: capitalize" class="elevation-0" small color="#F9FBFC">
+                  <v-icon size="15">mdi-format-align-bottom</v-icon>Filter
+                  actions
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <p class="body-1 mb-0 mb-sm-2 mb-md-2" color="#878B93">
+              All your trade activity based on dates
+            </p>
+          </v-col>
+            <v-col class="pr-0 pb-0 d-none d-md-flex" cols="6" sm="2" md="2">
+           <!--  <v-select
+              prepend-inner-icon="mdi-chart-arc"
+              append-icon="mdi-chevron-down"
+              class="rounded-lg"
+              color="gray"
+              dense
+              label="Select Segment"
+              single-line
+              outlined
+            ></v-select>  -->
+          </v-col>
+          <v-col class="pr-3 pb-0 d-none d-md-flex" cols="6" sm="2" md="2">
+            <v-text-field v-model="FullName" dense color="gray" outlined class="rounded-lg" label="Search symbol"
+              prepend-inner-icon="mdi-magnify"></v-text-field>
+          </v-col>
+          <v-col class="pl-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <!-- <v-btn class="font-weight-black" text color="#1877F2">Filter activity</v-btn> -->
+            <date-picker class="datepickersty" v-model="dates" range placeholder="Select date " :lang="lang"
+              @change="getDate(), apicall()">
+            </date-picker>
+          </v-col>
+          <!-- <v-col class="pr-3 pb-0" cols="6" sm="2" md="2">
+            <v-select :items="clientids" v-model="clids" dense color="gray" outlined class="rounded-lg" label=""
+              append-icon="mdi-chevron-down"></v-select>
+          </v-col> -->
+        </v-row>
+
+        <v-card outlined class="elevation-0 rounded-lg pa-1 pb-0 pa-md-6 pb-md-2 mt-6">
+          <CalenDartb />
+        </v-card>
+
+        <div class="mt-6">
+          <v-row no-gutters>
+            <v-col cols="8">
+              <p class="body-1 mb-1" color="#878B93">
+                Trade activity ({{ tradedetails.length }})
+              </p>
+            </v-col>
+            <v-col cols="4" class="text-right">
+              <v-menu v-if="downloadbtn" offset-y transition="slide-y-transition">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on" text color="#878B93"><img class="pr-2"
+                      src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </template>
+                <v-card class="elevation-0 py-2 px-1" color="white">
+                  <v-btn @click="tbpdf()" text block color="#878B93" class="text-capitalize">PDF document</v-btn>
+                  <vue-json-to-csv :json-data="tradebookdata" :csv-title="'TradeBook.csv'">
+                    <v-btn text block color="#878B93" class="text-capitalize">Excell sheet
+                    </v-btn>
+                  </vue-json-to-csv>
+                </v-card>
+              </v-menu>
+
+              <!-- <vue-json-to-csv :json-data="tradebookdata" :csv-title="'TradeBook.csv'">
+                <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                </v-btn>
+              </vue-json-to-csv> -->
+            </v-col>
+          </v-row>
+
+          <div class="mb-4 oholdingheadsty">
+            <v-data-table :loading="tradedetailsloader" mobile-breakpoint fixed-header :headers="holdinghead"
+              ref="mytable" :items="tradedetails" item-key="FullName" hide-default-footer
+              style="border: 1px solid #efeef3" class="cliidsty elevation-0 rounded-lg" must-sort multi-sort
+              :sort-by="['Trade_Date']" :sort-desc="[true]" :page.sync="page" :items-per-page="10"
+              @page-count="pageCount = $event" group-by="SecurityOrContract" :expanded.sync="holdexpand">
+              <template v-slot:[`group.header`]="{ group, toggle, isOpen }">
+                <!-- <th>{{ group }}</th> -->
+                <td colspan="7">
+                  {{ group.match(/\((.*?)\)/)[1] }}
+                  <v-btn @click="toggle" small icon :ref="group" :data-open="isOpen">
+                    <v-icon v-if="isOpen">mdi-chevron-up</v-icon>
+                    <v-icon v-else>mdi-chevron-down</v-icon>
+                  </v-btn>
+                </td>
+              </template>
+              <template v-slot:[`item.names`]="{ item }">
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title class="font-weight-regular">
+                      {{ item.SecurityOrContract.match(/\((.*?)\)/)[1] }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-icon class="mb-1 mt-2">
+                    <div v-if="item.Client_Code.slice(0, 1) == 'Z'">
+                      <img style="border: 1px solid #efeef3" width="24px" class="pa-1 rounded"
+                        src="@/assets/Ma_zebu.svg">
+                    </div>
+                    <div v-else>
+                      <v-avatar tile size="32"><v-card class="elevation-0 pa-1" rounded outlined>
+                          <span class="font-weight-bold">
+                            {{ item.Client_Code.slice(0, 2) }}
+                          </span>
+                        </v-card></v-avatar>
+                    </div>
+                  </v-list-item-icon>
+                </v-list-item>
+              </template>
+              <template v-slot:[`footer`]>
+                <v-divider></v-divider>
+                <div class="text-center py-2">
+                  <v-pagination :total-visible="7" v-model="page" :length="pageCount"></v-pagination>
+                </div>
+              </template>
+              <template v-slot:[`item.SecurityOrContract`]="{ item }">
+                {{ item.SecurityOrContract.match(/\((.*?)\)/)[1] }}
+              </template>
+              <template v-slot:[`item.BuyOrSell`]="{ item }">
+                <span class="font-weight-medium pa-2 rounded-lg" style="background-color: #eeffed; color: #34a853"
+                  v-if="item.BuyOrSell == 'B'">Buy</span>
+                <span class="font-weight-medium pa-2 rounded-lg" style="background-color: #ffeeee; color: #e12626"
+                  v-else>Sell</span>
+              </template>
+              <template v-if="usernodata" v-slot:no-data>
+                <v-col class="mx-auto pa-15">
+                  <v-img class="align-self-stretch mx-auto" width="100px"
+                    :src="require('@/assets/no data folder.svg')" />
+                  <h4>No data available</h4>
+                </v-col>
+              </template>
+            </v-data-table>
+          </div>
+        </div>
+      </div>
+    </v-container>
+    <div>
+      <v-snackbar style="z-index: 2 !important;" transition="slide-x-reverse-transition" v-model="snackbar"
+        :timeout="2000" :value="true" color="warning" absolute outlined top right>
+        <v-icon color="warning">mdi-alert-outline</v-icon>
+        Session <strong>expired</strong> Kindly Login again.
+      </v-snackbar>
+      </div>
+  </v-app>
+</template>
+ 
+<script>
+import { apiurl } from "../../apiUrl";
+import axios from "axios";
+import CalenDartb from "../../heatmap calendars/CalenDartb.vue";
+import DatePicker from "vue2-datepicker";
+import "vue2-datepicker/index.css";
+
+import "vue2-datepicker/locale/zh-cn";
+
+
+// import pdf from 'vue-pdf'
+export default {
+  data() {
+    return {
+      snackbar: false,
+      page: 1,
+      pageCount: 0,
+      holdexpand: [],
+
+      dates: [""],
+      usertotaldata: true,
+      usernodata: false,
+      tradedetailsloader: true,
+      downloadbtn: false,
+      holdingdetails: [],
+      dataget: [],
+      tradedetails: [],
+      lang: "en",
+      namecontract: "",
+      searchnamecontract: "",
+      tradebookItems: [],
+      tradebookdata: [],
+      FullName: "",
+      name: [],
+      clientids: [],
+      emailDatafetch: [],
+    };
+  },
+
+  methods: {
+    getDate() {
+      var i = this.dates;
+      this.fromdate = new Intl.DateTimeFormat("en-GB").format(i[0]);
+      this.todate = new Intl.DateTimeFormat("en-GB").format(i[1]);
+      console.log(this.fromdate, "getdate1");
+      console.log(this.todate, "getdate2");
+    },
+    checkClientSync() {
+      var gauthclientseassion = localStorage.clientsessionstore
+      // var gauthclientseassion = localStorage.clientsessionstore
+      var email = localStorage.getItem('decryptedstoredData')
+      var data = JSON.stringify({
+        email: email,
+      });
+
+      var config = {
+        method: "post",
+        url: `${apiurl}/syncEmailDetails`,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': gauthclientseassion
+        },
+        data: data,
+      };
+      var axiosThis = this
+      axios(config)
+        .then(function (response) {
+          console.warn("&&&e", response);
+          axiosThis.emailDatafetch = response.data.Data;
+          console.log("clientIds", response.data.msg)
+          if(response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid."){
+          axiosThis.snackbar = true;
+          setTimeout(function () {
+            axiosThis.$router.push("/signin");
+           
+          }, 2000);
+        }
+          if (response.data.msg == 'No Email Sync data available for User') {
+            axiosThis.tradedetailsloader = false;
+            axiosThis.usernodata = true;
+          }
+          for (var d = 0; d < axiosThis.emailDatafetch.length; d++) {
+            var clientIds = axiosThis.emailDatafetch[d].clientID;
+            console.log("clientIds", clientIds)
+            axiosThis.clientids.push(axiosThis.emailDatafetch[d].clientID);
+
+            var data = JSON.stringify({
+              clientid: clientIds,
+            });
+            var config = {
+              method: "post",
+              url: `${apiurl}/holdingDetails`,
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': gauthclientseassion
+              },
+              data: data,
+            };
+            axios(config)
+              .then(function (response) {
+                console.log(response.data);
+                axiosThis.holdingdetails = response.data.data;
+                if (response.data.msg == "No Data Available") {
+                  axiosThis.usernodata = true;
+                  axiosThis.tradedetailsloader = false;
+                  axiosThis.usertotaldata = false;
+                }
+                // console.log("holdingdetails", axiosThis.holdingdetails);
+                for (var i = 0; i < axiosThis.holdingdetails.length; i++) {
+                  axiosThis.dataget.push(axiosThis.holdingdetails[i].Data);
+                }
+                for (var l = 0; l < axiosThis.dataget.length; l++) {
+                  var trddtl_s1 = axiosThis.dataget[l];
+                  let trddtl_s2 = {};
+                  for (let s in trddtl_s1) {
+                    trddtl_s2[s] = trddtl_s1[s];
+                    // console.log( trddtl_s2[s].Trade_Price_O, " trddtl_s2[s]");
+
+                    trddtl_s2[s].Trade_Price_O = Number(
+                      trddtl_s2[s].Trade_Price_O
+                    ).toFixed(2);
+                    trddtl_s2[s].Trade_Value = Number(
+                      trddtl_s2[s].Trade_Value
+                    ).toFixed(2);
+                    axiosThis.tradedetails.push(trddtl_s2[s]);
+                    if (axiosThis.tradedetails.length > 0) {
+                      axiosThis.tradedetailsloader = false;
+                      axiosThis.downloadbtn = true;
+                    }
+                  }
+                }
+                axiosThis.tradedetails.map((td) => {
+                  var SecorCon = td.SecurityOrContract;
+                  var name = SecorCon.match(/\((.*?)\)/);
+                  var buy_sell = td.BuyOrSell == "B" ? " Buy" : " Sell";
+                  axiosThis.tradebookdata.push({
+                    Name: name[1],
+                    BuyorSell: buy_sell,
+                    Qty: td.Quantity,
+                    Trade_Price: td.Trade_Price_O,
+                    Trade_Value: td.TradeValue,
+                    Trade_No: td.Trade_No,
+                    Trade_Time: td.Trade_Time,
+                    TradeDate: td.Trade_Date,
+                  });
+                });
+                // console.log("tradebook values",axiosThis.tradebookdata)
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          }
+        })
+
+
+    },
+  },
+
+  mounted() {
+    this.checkClientSync();
+    // var axiosThis = this;
+    // var config = {
+    //     method: 'post',
+    //     url: `${apiurl}/holdingDetails`,
+    //     headers: {}
+    // };
+
+    // axios(config)
+    //     .then(function (response) {
+    //         // console.log(response.data);
+    //         axiosThis.holdingdetails = response.data;
+    //         console.log("holdingdetails", axiosThis.holdingdetails);
+    //         for (var i = 0; i < axiosThis.holdingdetails.length; i++) {
+    //             axiosThis.dataget.push(axiosThis.holdingdetails[i].Data)
+    //         }
+    //         for (var l = 0; l < axiosThis.dataget.length; l++) {
+    //             var trddtl_s1 = axiosThis.dataget[l]
+    //             let trddtl_s2 = {};
+    //             for (let s in trddtl_s1) {
+    //                 trddtl_s2[s] = trddtl_s1[s];
+    //                 // console.log( trddtl_s2[s].Trade_Price_O, " trddtl_s2[s]");
+
+    //                 trddtl_s2[s].Trade_Price_O = Number(trddtl_s2[s].Trade_Price_O).toFixed(2);
+    //                 trddtl_s2[s].Trade_Value = Number(trddtl_s2[s].Trade_Value).toFixed(2);
+    //                 axiosThis.tradedetails.push(trddtl_s2[s])
+    //             }
+    //         }
+    //         // console.log(axiosThis.tradedetails, "tradedetails_out");
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     });
+  },
+
+  computed: {
+    holdinghead() {
+      return [
+        {
+          text: "Name",
+          value: "SecurityOrContract",
+          sortable: false,
+          align: "left",
+          filter: (f) => {
+            return (f + "")
+              .toUpperCase()
+              .includes(this["FullName"].toUpperCase());
+          },
+        },
+        { text: "Company", value: "names", align: "left" },
+        { text: "Buy Sell", value: "BuyOrSell", sortable: false },
+        { text: "Qty", value: "Quantity", sortable: false, align: "right" },
+        {
+          text: "Trade Price",
+          value: "Trade_Price_O",
+          sortable: false,
+          align: "right",
+        },
+        {
+          text: "Trade Value",
+          value: "TradeValue",
+          sortable: false,
+          align: "right",
+        },
+        {
+          text: "Trade No",
+          value: "Trade_No",
+          sortable: false,
+          align: "right",
+        },
+        {
+          text: "Trade Time",
+          value: "Trade_Time",
+          sortable: false,
+          align: "right",
+        },
+        { text: "Trade Date", value: "Trade_Date", sortable: true },
+      ];
+    },
+  },
+  components: {
+    CalenDartb,
+    DatePicker,
+  },
+};
+</script>
+ 
+<style>
+.oholdingheadsty .v-data-table-header__sort-badge {
+    display: none !important;
+}
+
+.datepickersty .mx-input {
+  height: 40px !important;
+  width: 100%;
+  border-radius: 8px;
+  color: black !important;
+}
+</style>

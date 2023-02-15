@@ -1,0 +1,2742 @@
+<!-- base code start -->
+<template>
+  <v-app>
+    <v-container class="pa-0 pa-sm-3 pa-md-3">
+      <div class="pt-16 pa-6 pa-sm-4 pa-md-4">
+        <v-row>
+          <v-col cols="12" sm="12" md="8">
+            <v-row>
+              <v-col cols="6">
+                <p class="lstctntit headline mb-1">Profit & Loss</p>
+              </v-col>
+              <v-col cols="6" class="d-md-none text-right px-0">
+                <v-btn style="text-transform: capitalize" class="elevation-0" small color="#F9FBFC">
+                  <v-icon size="15">mdi-format-align-bottom</v-icon>Filter
+                  actions
+                </v-btn>
+              </v-col>
+            </v-row>
+            <p class="body-1 mb-0 mb-sm-2 mb-md-2" color="#878B93">
+              Profit and Loss for your trades.
+            </p>
+          </v-col>
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <!-- <v-select prepend-inner-icon="mdi-chart-arc" append-icon="mdi-chevron-down" class="rounded-lg" color="gray"
+              dense label="Select Segment" single-line outlined></v-select> -->
+          </v-col>
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <!-- <v-text-field dense color="gray" outlined class="rounded-lg" label="Search symbol"
+              prepend-inner-icon="mdi-magnify"></v-text-field> -->
+            <v-text-field v-model="PLName" dense color="gray" outlined class="rounded-lg mx-4 d-none d-md-flex"
+              label="Search" prepend-inner-icon="mdi-magnify" @input="PLName = PLName.toUpperCase()">
+            </v-text-field>
+          </v-col>
+          <!-- <v-col class="px-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <v-btn class="font-weight-black" text color="#1877F2"
+              >Filter activity</v-btn
+            >
+          </v-col> -->
+        </v-row>
+        <v-card outlined class="elevation-0 rounded-lg pa-1 pb-0 pa-md-6 pb-md-2 mt-6">
+          <CalendarProfitlose />
+        </v-card>
+
+        <div class="mt-6">
+          <div>
+            <v-card outlined class="d-md-none elevation-0 rounded-lg pa-4 pb-0">
+              <v-row class="py-2">
+                <v-col cols="5">
+                  <p class="caption" style="color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    ">
+                    Realised P&L
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <div v-if="totals.Quantity == 0">
+                    <p v-if="totals.Mtm > 0" class="ctnbtl body-1 mb-0 text-right"
+                      style="line-height: 28px; color: #34a853">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                    <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px; color: #e12626">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                  </div>
+                  <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px">
+                    0.00
+                  </p>
+                </v-col>
+              </v-row>
+              <v-divider></v-divider>
+              <v-row class="py-2">
+                <v-col cols="5">
+                  <p class="caption" style="
+                      color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    ">
+                    Unrealised P&L
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <div v-if="totals.Quantity != 0">
+                    <p v-if="totals.Mtm > 0" class="ctnbtl body-1 mb-0 text-right"
+                      style="line-height: 28px; color: #34a853">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                    <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px; color: #e12626">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                  </div>
+
+                  <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px">
+                    0.00
+                  </p>
+                </v-col>
+              </v-row>
+              <!-- <v-divider></v-divider> -->
+              <!-- <v-row class="py-2">
+                <v-col cols="5">
+                  <p
+                    class="caption"
+                    style="
+                      color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    "
+                  >
+                    Charges & taxes
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <p
+                    class="ctnbtl body-1 mb-0 text-right"
+                    style="line-height: 28px; color: #505359"
+                  >
+                    352.85
+                  </p>
+                </v-col>
+              </v-row> -->
+            </v-card>
+
+            <v-card outlined class="d-none d-md-flex elevation-0 rounded-lg">
+              <v-row no-gutters>
+                <v-col>
+                  <div class="pa-4">
+                    <p class="caption mb-0" style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      ">
+                      Realised P&L
+                    </p>
+                    <div v-if="totals.Quantity == 0">
+                      <p v-if="totals.Mtm > 0" class="ctnbtl headline mb-0" style="line-height: 28px; color: #34a853">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                      <p v-else class="ctnbtl headline mb-0" style="line-height: 28px; color: #e12626">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                    </div>
+                    <p v-else class="ctnbtl headline mb-0" style="line-height: 28px">
+                      0.00
+                    </p>
+                  </div>
+                </v-col>
+                <v-divider class="d-none d-md-flex" vertical></v-divider>
+                <v-col>
+                  <div class="pa-4">
+                    <p class="caption mb-0" style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      ">
+                      Unrealised P&L
+                    </p>
+                    <div v-if="totals.Quantity != 0">
+                      <p v-if="totals.Mtm > 0" class="ctnbtl headline mb-0" style="line-height: 28px; color: #34a853">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                      <p v-else class="ctnbtl headline mb-0" style="line-height: 28px; color: #e12626">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                    </div>
+
+                    <p v-else class="ctnbtl headline mb-0" style="line-height: 28px">
+                      0.00
+                    </p>
+                  </div>
+                </v-col>
+                <!-- <v-divider class="d-none d-md-flex" vertical></v-divider> -->
+                <!-- <v-col>
+                  <div class="pa-4">
+                    <p
+                      class="caption mb-0"
+                      style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      "
+                    >
+                      Charges & taxes
+                    </p>
+                    <p
+                      class="ctnbtl headline mb-0"
+                      style="line-height: 28px; color: #505359"
+                    >
+                      352<small>.85</small>
+                    </p>
+                  </div>
+                </v-col> -->
+              </v-row>
+            </v-card>
+          </div>
+          <div class="mt-2 mt-sm-0 mt-md-0">
+            <v-toolbar color="transparent" class="elevation-0 px-0 toolbar">
+              <v-col cols="8" class="px-0">
+                <v-tabs v-model="pnltab" flat background-color="transparent" color="#1877F2"
+                  active-class="font-weight-bold">
+                  <v-tab>P&L Summary</v-tab>
+                  <v-tab>P&L</v-tab>
+                </v-tabs>
+              </v-col>
+              <v-col class="px-0 d-flex justify-end" cols="4">
+                <!-- <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download -->
+                <!-- </v-btn> -->
+                <div v-if="PLSummarybtndwn">
+                  <vue-json-to-csv :json-data="summDataFinalvalue" :csv-title="'overviews.csv'" :label="{}">
+                    <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg"
+                        width="25px" />Download
+                    </v-btn>
+                  </vue-json-to-csv>
+                </div>
+                <div v-if="PLbtndwn">
+                  <vue-json-to-csv :json-data="tableDatafinalvalue" :csv-title="'overviews.csv'">
+                    <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg"
+                        width="25px" />Download
+                    </v-btn>
+                  </vue-json-to-csv>
+                </div>
+              </v-col>
+            </v-toolbar>
+
+            <v-tabs-items v-model="pnltab">
+              <v-tab-item>
+                <!-- <vue-json-to-csv :json-data="summDataFinalvalue" :csv-title="'overviews.csv'" :label="{}">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv> -->
+                <div class="trdditl py-4">
+                  <v-data-table :loading="tradedetailsloader" fixed-header disable-filtering mobile-breakpoint
+                    :headers="summarydetailshead" :items="summDataFinal" item-key="PLName" :search="searchName"
+                    hide-default-footer style="border: 1px solid #efeef3" class="datedetailshead elevation-0 rounded-lg"
+                    :page.sync="page" :items-per-page="10" @page-count="pageCount = $event">
+                    <template v-slot:[`footer`]>
+                      <v-divider></v-divider>
+                      <div class="text-center py-2">
+                        <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                      </div>
+                    </template>
+                    <template v-slot:[`item.SecurityOrContract`]="{ item }">
+                      {{ item.SecurityOrContract.match(/\((.*?)\)/)[1] }}
+                    </template>
+                    <template v-slot:[`item.Buy_Price`]="{ item }">
+                      <div>{{ item.Buy_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Sell_Price`]="{ item }">
+                      <div>{{ item.Sell_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Net_rate`]="{ item }">
+                      <div>{{ Math.abs(item.Net_rate.toFixed(2)) }}</div>
+                    </template>
+                    <template v-slot:[`item.Ltp`]="{ item }">
+                      <div>{{ item.Ltp.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Mtm`]="{ item }">
+                      <div>{{ item.Mtm.toFixed(2) }}</div>
+                    </template>
+                    <template v-if="usertotaldata" v-slot:[`body.append`]>
+                      <tr class="black--text">
+                        <td class="text-left">
+                          <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                            style="background-color: #e8ebed; color: #505359">{{ summDataFinal.length }} Profit &
+                            Loss</span>
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td class="subtitle-1 text-right font-weight-medium">
+                          {{ summtotal.Mtm.toLocaleString() }}
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-if="usernodata" v-slot:no-data>
+                      <v-col class="mx-auto pa-15">
+                        <v-img class="align-self-stretch mx-auto" width="100px"
+                          :src="require('@/assets/no data folder.svg')" />
+                        <h4>No data available</h4>
+                      </v-col>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-tab-item>
+              <v-tab-item>
+                <!-- <vue-json-to-csv :json-data="tableDatafinalvalue" :csv-title="'overviews.csv'">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv> -->
+                <div class="trdditl py-4">
+                  <v-data-table group-by="SecurityOrContract" :loading="tradedetailsloader" fixed-header
+                    :sort-by="['Trade_Date']" must-sort multi-sort :sort-desc="[false]" mobile-breakpoint
+                    :headers="datedetailshead" :items="tableDataFinal" hide-default-footer
+                    style="border: 1px solid #efeef3" class="datedetailshead elevation-0 rounded-lg" :page.sync="page"
+                    :items-per-page="10" @page-count="pageCount = $event">
+                    <template v-slot:[`footer`]>
+                      <v-divider></v-divider>
+                      <div class="text-center py-2">
+                        <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                      </div>
+                    </template>
+                    <template v-slot:[`group.header`]="{ items }">
+                      <td>
+                        <strong>{{ items[0].SecurityOrContract.match(/\((.*?)\)/)[1] }}</strong>
+                      </td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </template>
+                    <template v-slot:[`item.SecurityOrContract`]="{ item }">
+                      {{ item.SecurityOrContract.match(/\((.*?)\)/)[1] }}
+                    </template>
+                    <template v-slot:[`item.Buy_Price`]="{ item }">
+                      <div>{{ item.Buy_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Sell_Price`]="{ item }">
+                      <div>{{ item.Sell_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Net_rate`]="{ item }">
+                      <div>{{ Math.abs(item.Net_rate.toFixed(2)) }}</div>
+                    </template>
+                    <template v-slot:[`item.Ltp`]="{ item }">
+                      <div>{{ item.Ltp.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Mtm`]="{ item }">
+                      <div>{{ item.Mtm.toFixed(2) }}</div>
+                    </template>
+                    <template v-if="usertotaldata" v-slot:[`body.append`]>
+                      <tr class="black--text">
+                        <td class="text-left">
+                          <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                            style="background-color: #e8ebed; color: #505359">{{ tableDataFinal.length }} Profit &
+                            Loss</span>
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td class="subtitle-1 text-right font-weight-medium">
+                          {{ totals.Mtm.toLocaleString() }}
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-if="usernodata" v-slot:no-data>
+                      <v-col class="mx-auto pa-15">
+                        <v-img class="align-self-stretch mx-auto" width="100px"
+                          :src="require('@/assets/no data folder.svg')" />
+                        <h4>No data available</h4>
+                      </v-col>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-tab-item>
+
+            </v-tabs-items>
+          </div>
+        </div>
+      </div>
+    </v-container>
+  </v-app>
+</template>
+
+<script>
+  import { apiurl } from "../../apiUrl";
+  import axios from "axios";
+  import CalendarProfitlose from "@/views/heatmap calendars/CalendarProfitlose.vue";
+  import VueJsonToCsv from "vue-json-to-csv";
+  export default {
+    data() {
+      return {
+        page: 1,
+        pageCount: 0,
+
+        pnltab: null,
+        usertotaldata: true,
+        usernodata: false,
+        PLName: '',
+        PLSummarybtndwn: false,
+        PLbtndwn: false,
+        searchName: '',
+        dates: [""],
+        tradedetailsloader: true,
+        datesummary: [],
+        dataget: [],
+        sumget: [],
+        tradedetails: [],
+        summarydetails: [],
+        tokengetdata: [],
+        sumtokendata: [],
+        tableDataFinal: [],
+        summDataFinal: [],
+        summDataFinalvalue: [],
+        currentItems: [],
+        tableDatafinalvalue: [],
+      };
+    },
+    methods: {
+      onCurrentItemsChanged(val) {
+        this.currentItems = val;
+      },
+    },
+    mounted() {
+      var gauthclientseassion = localStorage.clientsessionstore
+      var getTokendata = localStorage.getItem("getTokendata")
+
+      var axiosThis = this;
+
+      var data = JSON.stringify({
+        // clientid: userBrokerClientId,
+        clientid: "ZE1A57",
+
+      });
+
+      var config = {
+        method: "post",
+        url: `${apiurl}/datesummary`,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': gauthclientseassion
+        },
+        data: data,
+      };
+
+      axios(config)
+        .then(function (response) {
+          console.log(response.data);
+          axiosThis.datesummary = response.data.data;
+          if (response.data.msg == "No Data Available") {
+            axiosThis.usernodata = true;
+            axiosThis.tradedetailsloader = false;
+            axiosThis.usertotaldata = false;
+          }
+          console.log("datesummary", axiosThis.datesummary);
+          for (var i = 0; i < axiosThis.datesummary.length; i++) {
+            axiosThis.dataget.push(axiosThis.datesummary[i].day_wise);
+            axiosThis.sumget.push(axiosThis.datesummary[i].summary);
+          }
+
+          for (var l = 0; l < axiosThis.dataget.length; l++) {
+            var trddtl_s1s = axiosThis.dataget[l];
+
+            for (var s = 0; s < trddtl_s1s.length; s++) {
+              if (trddtl_s1s[s].token != "") {
+                var trddtl_s2 = trddtl_s1s[s];
+                axiosThis.tradedetails.push(trddtl_s2);
+                // axiosThis.toks.push("nse_cm" + '|' + trddtl_s1s[q].token)
+                // axiosThis.profitlossdatewise.push(axiosThis.dataget)
+              }
+              // console.log(trddtl_s2.token, "dataget");
+
+              // ////////////////////////
+              var data = JSON.stringify({
+                userId: "ZP00172",
+                scripList: "nse_cm|212,nse_cm|" + trddtl_s2.token,
+              });
+
+              var tokenconfig = {
+                method: "post",
+                url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+                headers: {
+                  Authorization: `Bearer ZP00172 ${getTokendata}`,
+                  "Content-Type": "application/json",
+                },
+                data: data,
+              };
+
+              axios(tokenconfig)
+                .then(function (response) {
+                  // console.log("dataget2", response.data[1]);
+                  axiosThis.tokengetdata.push(response.data[1]);
+                  // console.log("trddtl_s3.token", axiosThis.tokengetdata);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }
+          }
+
+          for (var r = 0; r < axiosThis.sumget.length; r++) {
+            var sumdtl_s1 = axiosThis.sumget[r];
+
+            for (var y = 0; y < sumdtl_s1.length; y++) {
+              if (sumdtl_s1[y].token != "") {
+                var sumdtl_s2 = sumdtl_s1[y];
+                axiosThis.summarydetails.push(sumdtl_s1);
+
+                // axiosThis.toks.push("nse_cm" + '|' + trddtl_s1s[q].token)
+                // axiosThis.profitlossdatewise.push(axiosThis.dataget)
+              }
+              // console.log(sumdtl_s2.token, "sumdtl_s2");
+              // console.log(axiosThis.summarydetails, "summarydetails");
+
+              // ////////////////////////
+              var sumdata = JSON.stringify({
+                userId: "ZP00172",
+                scripList: "nse_cm|212,nse_cm|" + sumdtl_s2.token,
+              });
+
+              var sumtokenconfig = {
+                method: "post",
+                url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+                headers: {
+                  Authorization: `Bearer ZP00172 ${getTokendata}`,
+                  "Content-Type": "application/json",
+                },
+                data: sumdata,
+              };
+
+              axios(sumtokenconfig)
+                .then(function (response) {
+                  // console.log("dataget2", response.data[1]);
+                  axiosThis.sumtokendata.push(response.data[1]);
+                  // console.log("sumtokendata", axiosThis.sumtokendata);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }
+          }
+
+          setTimeout(function () {
+            // console.table("dataget",axiosThis.tokengetdata, "a",axiosThis.tradedetails);
+
+            for (var o = 0; o < axiosThis.tradedetails.length; o++) {
+              for (var w = 0; w < axiosThis.tradedetails.length; w++) {
+                // console.log(axiosThis.tradedetails[o].token,"\\\\",w,"||",axiosThis.tokengetdata[w].token,"\\\\\\",o)
+
+                if (
+                  axiosThis.tradedetails[o].token ==
+                  axiosThis.tokengetdata[w].token
+                ) {
+                  axiosThis.tradedetails[o]["Ltp"] = Number(
+                    axiosThis.tokengetdata[w].ltp
+                  );
+                  axiosThis.tradedetails[o]["Net_rate"] =
+                    axiosThis.tradedetails[o].Net_Value /
+                    axiosThis.tradedetails[o].Quantity;
+                  axiosThis.tradedetails[o]["Mtm"] =
+                    (axiosThis.tradedetails[o].Ltp -
+                      axiosThis.tradedetails[o].Net_rate) *
+                    axiosThis.tradedetails[o].Quantity;
+                  // }
+                }
+              }
+              var datedatas1 = axiosThis.tradedetails[o];
+              axiosThis.tableDataFinal.push(datedatas1);
+              axiosThis.tableDatafinalvalue.push(
+                {
+                  "Trade Date": datedatas1.SecurityOrContract.match(/\((.*?)\)/)[1],
+                  "Buy Qty": '',
+                  "Buy Rate": "",
+                  "Sell Qty": "",
+                  "Sell Rate": "",
+                  "Net Qty": "",
+                  "Net Rate": "",
+                  "MTM": ""
+                },
+                {
+                  "Trade Date": datedatas1.Trade_Date,
+                  "Buy Qty": datedatas1.Buy_Quantity,
+                  "Buy Rate": datedatas1.Buy__Price,
+                  "Sell Qty": datedatas1.Sell_Quantity,
+                  "Sell Rate": datedatas1.Sell_Price,
+                  "Net Qty": datedatas1.Quantity,
+                  "Net Rate": datedatas1.Ltp,
+                  "MTM": datedatas1.Mtm
+                })
+
+            }
+
+            // axiosThis.tableDatafinalvalue.push({
+            //   "Trade Date":(`${axiosThis.tableDatafinal.legnth}${"  Profit & Loss"}`),
+            //   "Buy Qty":'',
+            //   "Buy Rate":"",
+            //   "Sell Qty":"",
+            //   "Sell Rate":"",
+            //   "Net Qty": "",
+            //   "Net Rate": "",
+            //   "MTM": axiosThis.totals.Mtm
+            // })
+            // console.log(axiosThis.tableDatafinalvalue)
+
+            for (var p = 0; p < axiosThis.summarydetails.length; p++) {
+              for (var u = 0; u < axiosThis.summarydetails.length; u++) {
+                // console.log(axiosThis.summarydetails[p][0].token, "\\\\", w, "||", axiosThis.sumtokendata[u].token, "\\\\\\", o, "iuytrdf")
+
+                if (
+                  axiosThis.summarydetails[p][0].token ==
+                  axiosThis.sumtokendata[u].token
+                ) {
+                  axiosThis.summarydetails[p][0]["Ltp"] = Number(
+                    axiosThis.sumtokendata[u].ltp
+                  );
+                  axiosThis.summarydetails[p][0]["Net_rate"] =
+                    axiosThis.summarydetails[p][0].Net_Value /
+                    axiosThis.summarydetails[p][0].Quantity;
+                  axiosThis.summarydetails[p][0]["Mtm"] =
+                    (axiosThis.summarydetails[p][0].Ltp -
+                      axiosThis.summarydetails[p][0].Net_rate) *
+                    axiosThis.summarydetails[p][0].Quantity;
+                  // }
+                }
+              }
+              var summdatas1 = axiosThis.summarydetails[p][0];
+              console.log(summdatas1, "summdatas1");
+
+              axiosThis.summDataFinal.push(summdatas1);
+              axiosThis.summDataFinalvalue.push({
+                "SecurityOrContract": summdatas1.SecurityOrContract.match(/\((.*?)\)/)[1],
+                "Buy Qty": summdatas1.Buy_Quantity,
+                "Buy Rate": summdatas1.Buy_Price,
+                "Sell Qty": summdatas1.Sell_Quantity,
+                "Sell Rate": summdatas1.Sell_Price,
+                "Net Qty": summdatas1.Quantity,
+                "Net Rate": summdatas1.Net_rate,
+                "LTP": summdatas1.Ltp,
+                "MTM": summdatas1.Mtm
+              });
+
+            }
+            axiosThis.summDataFinalvalue.push({
+              "SecurityOrContract": (`${axiosThis.summDataFinal.length}${" holdings"}`),
+              "Buy Qty": "",
+              "Buy Rate": "",
+              "Sell Qty": "",
+              "Sell Rate": "",
+              "Net Qty": "",
+              "Net Rate": "",
+              "LTP": "",
+              "MTM": axiosThis.summtotal.Mtm
+            })
+
+          }, 1000);
+          axiosThis.tableDatafinalvalue.push({
+            "Trade Date": (`${axiosThis.tableDatafinal.legnth}${"  Profit & Loss"}`),
+            "Buy Qty": '',
+            "Buy Rate": "",
+            "Sell Qty": "",
+            "Sell Rate": "",
+            "Net Qty": "",
+            "Net Rate": "",
+            "MTM": axiosThis.totals.Mtm
+          })
+          // console.log(axiosThis.tableDatafinalvalue)
+          // console.log(axiosThis.summDataFinal, "summDataFinal");
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    computed: {
+      totals() {
+        const totals = this.tableDataFinal.reduce(
+          (acc, d) => {
+            acc.Quantity += d.Quantity;
+            acc.Mtm += d.Mtm;
+            this.tradedetailsloader = false;
+            if (this.pnltab == 0) {
+              this.PLSummarybtndwn = true;
+              this.PLbtndwn = false;
+            }
+            if (this.pnltab == 1) {
+              this.PLbtndwn = true;
+              this.PLSummarybtndwn = false;
+            }
+            return acc;
+          },
+          {
+            Mtm: 0,
+            none: "",
+          }
+        );
+        totals.Mtm = totals.Mtm.toFixed(2)
+
+        return totals;
+      },
+      summtotal() {
+        const summtotal = this.summDataFinal.reduce(
+          (acc, d) => {
+            acc.Quantity += d.Quantity;
+            acc.Mtm += d.Mtm;
+            this.tradedetailsloader = false;
+            return acc;
+          },
+          {
+            Mtm: 0,
+            none: "",
+          }
+        );
+        summtotal.Mtm = summtotal.Mtm.toFixed(2)
+        console.log(summtotal.Mtm)
+        return summtotal;
+      },
+
+      summarydetailshead() {
+        return [
+          {
+            text: "SecurityOrContract",
+            value: "SecurityOrContract",
+            sortable: false,
+            filter: (f) => {
+              return (f + "")
+                .toUpperCase()
+                .includes(this["PLName"].toUpperCase());
+            },
+          },
+          {
+            text: "Buy Qty",
+            value: "Buy_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Buy Rate",
+            value: "Buy_Price",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Qty",
+            value: "Sell_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Rate",
+            value: "Sell_Price",
+            align: "right",
+            sortable: false,
+          },
+          { text: "Net Qty", value: "Quantity", align: "right", sortable: false },
+          {
+            text: "Net Rate",
+            value: "Net_rate",
+            align: "right",
+            sortable: false,
+          },
+          { text: "LTP", value: "Ltp", align: "right", sortable: false },
+          { text: "MTM", value: "Mtm", align: "right", sortable: false },
+        ];
+      },
+
+      datedetailshead() {
+        return [
+          {
+            text: "Trade Date", value: "Trade_Date", sortable: true,
+            // filter: (f) => {
+            //     return (f + "")
+            //       .toUpperCase()
+            //       .includes(this["Trade Date"].toUpperCase());
+            //   },
+          },
+          {
+            text: "SecurityOrContract",
+            value: "SecurityOrContract",
+            sortable: false,
+
+          },
+          {
+            text: "Buy Qty",
+            value: "Buy_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Buy Rate",
+            value: "Buy_Price",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Qty",
+            value: "Sell_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Rate",
+            value: "Sell_Price",
+            align: "right",
+            sortable: false,
+          },
+          { text: "Net Qty", value: "Quantity", align: "right", sortable: false },
+          {
+            text: "Net Rate",
+            value: "Net_rate",
+            align: "right",
+            sortable: false,
+          },
+          { text: "LTP", value: "Ltp", align: "right", sortable: false },
+          { text: "MTM", value: "Mtm", align: "right", sortable: false },
+        ];
+      },
+      // dateRangeText() {
+      //   return this.dates.join(" ~ ");
+      // },
+    },
+    components: { CalendarProfitlose, "vue-json-to-csv": VueJsonToCsv },
+  };
+</script>
+
+<style>
+  .trdditl::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .trdditl::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .trdditl::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.6);
+    border-radius: 16px;
+  }
+
+  .toolbar .v-toolbar__content {
+    padding: 0 !important;
+  }
+
+  .datedetailshead .v-data-table-header__sort-badge {
+    display: none !important;
+  }
+</style>
+<!-- base code end  -->
+
+---------------------------------------------------------------
+
+<!-- nexttry code start -->
+
+<template>
+  <v-app>
+    <v-container class="pa-0 pa-sm-3 pa-md-3">
+      <div class="pt-16 pa-6 pa-sm-4 pa-md-4">
+        <v-row>
+          <v-col cols="12" sm="12" md="8">
+            <v-row>
+              <v-col cols="6">
+                <p class="lstctntit headline mb-1">Profit & Loss</p>
+              </v-col>
+              <v-col cols="6" class="d-md-none text-right px-0">
+                <v-btn style="text-transform: capitalize" class="elevation-0" small color="#F9FBFC">
+                  <v-icon size="15">mdi-format-align-bottom</v-icon>Filter
+                  actions
+                </v-btn>
+              </v-col>
+            </v-row>
+            <p class="body-1 mb-0 mb-sm-2 mb-md-2" color="#878B93">
+              Profit and Loss for your trades.
+            </p>
+          </v-col>
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <!-- <v-select prepend-inner-icon="mdi-chart-arc" append-icon="mdi-chevron-down" class="rounded-lg" color="gray"
+              dense label="Select Segment" single-line outlined></v-select> -->
+          </v-col>
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <!-- <v-text-field dense color="gray" outlined class="rounded-lg" label="Search symbol"
+              prepend-inner-icon="mdi-magnify"></v-text-field> -->
+            <v-text-field v-model="PLName" dense color="gray" outlined class="rounded-lg mx-4 d-none d-md-flex"
+              label="Search" prepend-inner-icon="mdi-magnify" @input="PLName = PLName.toUpperCase()">
+            </v-text-field>
+          </v-col>
+          <!-- <v-col class="px-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <v-btn class="font-weight-black" text color="#1877F2"
+              >Filter activity</v-btn
+            >
+          </v-col> -->
+        </v-row>
+        <!-- <v-card outlined class="elevation-0 rounded-lg pa-1 pb-0 pa-md-6 pb-md-2 mt-6">
+          <CalendarProfitlose />
+        </v-card> -->
+
+        <div class="mt-6">
+          <div>
+            <v-card outlined class="d-md-none elevation-0 rounded-lg pa-4 pb-0">
+              <v-row class="py-2">
+                <v-col cols="5">
+                  <p class="caption" style="color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    ">
+                    Realised P&L
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <div v-if="totals.Quantity == 0">
+                    <p v-if="totals.Mtm > 0" class="ctnbtl body-1 mb-0 text-right"
+                      style="line-height: 28px; color: #34a853">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                    <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px; color: #e12626">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                  </div>
+                  <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px">
+                    0.00
+                  </p>
+                </v-col>
+              </v-row>
+              <v-divider></v-divider>
+              <v-row class="py-2">
+                <v-col cols="5">
+                  <p class="caption" style="
+                      color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    ">
+                    Unrealised P&L
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <div v-if="totals.Quantity != 0">
+                    <p v-if="totals.Mtm > 0" class="ctnbtl body-1 mb-0 text-right"
+                      style="line-height: 28px; color: #34a853">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                    <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px; color: #e12626">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                  </div>
+                  <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px">
+                    0.00
+                  </p>
+                </v-col>
+              </v-row>
+              <!-- <v-divider></v-divider> -->
+              <!-- <v-row class="py-2">
+                <v-col cols="5">
+                  <p
+                    class="caption"
+                    style="
+                      color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    "
+                  >
+                    Charges & taxes
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <p
+                    class="ctnbtl body-1 mb-0 text-right"
+                    style="line-height: 28px; color: #505359"
+                  >
+                    352.85
+                  </p>
+                </v-col>
+              </v-row> -->
+            </v-card>
+
+            <v-card outlined class="d-none d-md-flex elevation-0 rounded-lg">
+              <v-row no-gutters>
+                <v-col>
+                  <div class="pa-4">
+                    <p class="caption mb-0" style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      ">
+                      Realised P&L
+                    </p>
+                    <div v-if="totals.Quantity == 0">
+                      <p v-if="totals.Mtm > 0" class="ctnbtl headline mb-0" style="line-height: 28px; color: #34a853">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                      <p v-else class="ctnbtl headline mb-0" style="line-height: 28px; color: #e12626">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                    </div>
+                    <p v-else class="ctnbtl headline mb-0" style="line-height: 28px">
+                      0.00
+                    </p>
+                  </div>
+                </v-col>
+                <v-divider class="d-none d-md-flex" vertical></v-divider>
+                <v-col>
+                  <div class="pa-4">
+                    <p class="caption mb-0" style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      ">
+                      Unrealised P&L
+                    </p>
+                    <div v-if="totals.Quantity != 0">
+                      <p v-if="totals.Mtm > 0" class="ctnbtl headline mb-0" style="line-height: 28px; color: #34a853">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                      <p v-else class="ctnbtl headline mb-0" style="line-height: 28px; color: #e12626">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                    </div>
+
+                    <p v-else class="ctnbtl headline mb-0" style="line-height: 28px">
+                      0.00
+                    </p>
+                  </div>
+                </v-col>
+                <!-- <v-divider class="d-none d-md-flex" vertical></v-divider> -->
+                <!-- <v-col>
+                  <div class="pa-4">
+                    <p
+                      class="caption mb-0"
+                      style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      "
+                    >
+                      Charges & taxes
+                    </p>
+                    <p
+                      class="ctnbtl headline mb-0"
+                      style="line-height: 28px; color: #505359"
+                    >
+                      352<small>.85</small>
+                    </p>
+                  </div>
+                </v-col> -->
+              </v-row>
+            </v-card>
+          </div>
+          <div class="mt-2 mt-sm-0 mt-md-0">
+            <v-toolbar color="transparent" class="elevation-0 px-0 toolbar">
+              <v-col cols="8" class="px-0">
+                <v-tabs v-model="pnltab" flat background-color="transparent" color="#1877F2"
+                  active-class="font-weight-bold">
+                  <v-tab>P&L Summary</v-tab>
+                  <v-tab>P&L</v-tab>
+                </v-tabs>
+              </v-col>
+              <v-col class="px-0 d-flex justify-end" cols="4">
+                <!-- <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download -->
+                <!-- </v-btn> -->
+                <v-menu v-if="downloadbtn" offset-y transition="slide-y-transition">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on" text color="#878B93"><img class="pr-2"
+                        src="@/assets/download icon.svg" width="25px" />Download
+                    </v-btn>
+                  </template>
+                  <v-card class="elevation-0 py-2 px-1" color="white">
+                    <v-btn @click="plpdf()" text block color="#878B93" class="text-capitalize">PDF document</v-btn>
+
+                    <div v-if="PLSummarybtndwn">
+                      <vue-json-to-csv :json-data="summDataFinalvalue" :csv-title="'overviews.csv'">
+                        <v-btn text block color="#878B93" class="text-capitalize">Excell sheet
+                        </v-btn>
+                      </vue-json-to-csv>
+                    </div>
+                    <div v-if="PLbtndwn">
+                      <vue-json-to-csv :json-data="tableDatafinalvalue" :csv-title="'overviews.csv'">
+                        <v-btn text block color="#878B93" class="text-capitalize">Excell sheet
+                        </v-btn>
+                      </vue-json-to-csv>
+                    </div>
+                  </v-card>
+                </v-menu>
+
+
+              </v-col>
+            </v-toolbar>
+
+            <v-tabs-items v-model="pnltab">
+              <v-tab-item>
+                <!-- <vue-json-to-csv :json-data="summDataFinalvalue" :csv-title="'overviews.csv'" :label="{}">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv> -->
+                <div class="trdditl py-4">
+                  <v-data-table :loading="tradedetailsloader" fixed-header disable-filtering mobile-breakpoint
+                    :headers="summarydetailshead" :items="summDataFinal" item-key="PLName" :search="searchName"
+                    hide-default-footer style="border: 1px solid #efeef3" class="datedetailshead elevation-0 rounded-lg"
+                    :page.sync="page" :items-per-page="10" @page-count="pageCount = $event">
+                    <template v-slot:[`footer`]>
+                      <v-divider></v-divider>
+                      <div class="text-center py-2">
+                        <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                      </div>
+                    </template>
+                    <template v-slot:[`item.SecurityOrContract`]="{ item }">
+                      {{ item.SecurityOrContract.match(/\((.*?)\)/)[1] }}
+                    </template>
+                    <template v-slot:[`item.Buy_Price`]="{ item }">
+                      <div>{{ item.Buy_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Sell_Price`]="{ item }">
+                      <div>{{ item.Sell_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Net_rate`]="{ item }">
+                      <div>{{ Math.abs(item.Net_rate.toFixed(2)) }}</div>
+                    </template>
+                    <template v-slot:[`item.Ltp`]="{ item }">
+                      <div>{{ item.Ltp.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Mtm`]="{ item }">
+                      <div>{{ item.Mtm.toFixed(2) }}</div>
+                    </template>
+                    <template v-if="usertotaldata" v-slot:[`body.append`]>
+                      <tr class="black--text">
+                        <td class="text-left">
+                          <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                            style="background-color: #e8ebed; color: #505359">{{ summDataFinal.length }} Profit &
+                            Loss</span>
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td class="subtitle-1 text-right font-weight-medium">
+                          {{ summtotal.Mtm.toLocaleString() }}
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-if="usernodata" v-slot:no-data>
+                      <v-col class="mx-auto pa-15">
+                        <v-img class="align-self-stretch mx-auto" width="100px"
+                          :src="require('@/assets/no data folder.svg')" />
+                        <h4>No data available</h4>
+                      </v-col>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-tab-item>
+              <v-tab-item>
+                <!-- <vue-json-to-csv :json-data="tableDatafinalvalue" :csv-title="'overviews.csv'">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv> -->
+                <div class="trdditl py-4">
+                  <v-data-table group-by="SecurityOrContract" :loading="tradedetailsloader" fixed-header
+                    :sort-by="['Trade_Date']" must-sort multi-sort :sort-desc="[false]" mobile-breakpoint
+                    :headers="datedetailshead" :items="tableDataFinal" hide-default-footer
+                    style="border: 1px solid #efeef3" class="datedetailshead elevation-0 rounded-lg" :page.sync="page"
+                    :items-per-page="10" @page-count="pageCount = $event">
+                    <template v-slot:[`footer`]>
+                      <v-divider></v-divider>
+                      <div class="text-center py-2">
+                        <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                      </div>
+                    </template>
+                    <template v-slot:[`group.header`]="{ items }">
+                      <td>
+                        <strong>{{ items[0].SecurityOrContract.match(/\((.*?)\)/)[1] }}</strong>
+                      </td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </template>
+                    <template v-slot:[`item.SecurityOrContract`]="{ item }">
+                      {{ item.SecurityOrContract.match(/\((.*?)\)/)[1] }}
+                    </template>
+                    <template v-slot:[`item.Buy_Price`]="{ item }">
+                      <div>{{ item.Buy_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Sell_Price`]="{ item }">
+                      <div>{{ item.Sell_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Net_rate`]="{ item }">
+                      <div>{{ Math.abs(item.Net_rate.toFixed(2)) }}</div>
+                    </template>
+                    <template v-slot:[`item.Ltp`]="{ item }">
+                      <div>{{ item.Ltp.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Mtm`]="{ item }">
+                      <div>{{ item.Mtm.toFixed(2) }}</div>
+                    </template>
+                    <template v-if="usertotaldata" v-slot:[`body.append`]>
+                      <tr class="black--text">
+                        <td class="text-left">
+                          <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                            style="background-color: #e8ebed; color: #505359">{{ tableDataFinal.length }} Profit &
+                            Loss</span>
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td class="subtitle-1 text-right font-weight-medium">
+                          {{ totals.Mtm.toLocaleString() }}
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-if="usernodata" v-slot:no-data>
+                      <v-col class="mx-auto pa-15">
+                        <v-img class="align-self-stretch mx-auto" width="100px"
+                          :src="require('@/assets/no data folder.svg')" />
+                        <h4>No data available</h4>
+                      </v-col>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-tab-item>
+
+            </v-tabs-items>
+          </div>
+        </div>
+      </div>
+    </v-container>
+  </v-app>
+</template>
+
+<script>
+  import { apiurl } from "../../apiUrl";
+  import axios from "axios";
+  // import CalendarProfitlose from "@/views/heatmap calendars/CalendarProfitlose.vue";
+  import VueJsonToCsv from "vue-json-to-csv";
+  import { jsPDF } from "jspdf";
+  import autoTable from 'jspdf-autotable'
+  export default {
+    data() {
+      return {
+        page: 1,
+        pageCount: 0,
+
+        pnltab: null,
+        usertotaldata: true,
+        usernodata: false,
+        PLName: '',
+        PLSummarybtndwn: false,
+        PLbtndwn: false,
+        searchName: '',
+        dates: [""],
+        tradedetailsloader: true,
+        downloadbtn: false,
+        datesummary: [],
+        dataget: [],
+        sumget: [],
+        tradedetails: [],
+        summarydetails: [],
+        tokengetdata: [],
+        sumtokendata: [],
+        tableDataFinal: [],
+        summDataFinal: [],
+        summDataFinalvalue: [],
+        currentItems: [],
+        tableDatafinalvalue: [],
+        name: '',
+      };
+    },
+    //   methods: {
+    //       onCurrentItemsChanged(val) {
+    //     this.currentItems = val;
+    //   },
+    // },
+    mounted() {
+      var userBrokerClientId = localStorage.getItem('client-id')
+      var gauthclientseassion = localStorage.clientsessionstore
+      var getTokendata = localStorage.getItem("getTokendata");
+
+      var axiosThis = this;
+
+      var data = JSON.stringify({
+        // clientid: "ZE1A57",
+        clientid: userBrokerClientId,
+
+
+      });
+
+      var config = {
+        method: "post",
+        url: `${apiurl}/datesummary`,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': gauthclientseassion
+        },
+        data: data,
+      };
+
+      axios(config)
+        .then(function (response) {
+          console.log(response.data);
+          axiosThis.datesummary = response.data.data;
+          if (response.data.msg == "No Data Available") {
+            axiosThis.usernodata = true;
+            axiosThis.tradedetailsloader = false;
+            axiosThis.usertotaldata = false;
+          }
+          console.log("datesummary", axiosThis.datesummary);
+          for (var i = 0; i < axiosThis.datesummary.length; i++) {
+            axiosThis.dataget.push(axiosThis.datesummary[i].day_wise);
+            axiosThis.sumget.push(axiosThis.datesummary[i].summary);
+          }
+
+          for (var l = 0; l < axiosThis.dataget.length; l++) {
+            var trddtl_s1s = axiosThis.dataget[l];
+
+            for (var s = 0; s < trddtl_s1s.length; s++) {
+              var trddtl_s2 = trddtl_s1s[s];
+              // console.log(trddtl_s2.token, "dataget");
+              axiosThis.tradedetails.push(trddtl_s2);
+
+              // ////////////////////////
+              var data = JSON.stringify({
+                userId: "ZP00172",
+                scripList: "nse_cm|212,nse_cm|" + trddtl_s2.token,
+              });
+
+              var tokenconfig = {
+                method: "post",
+                url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+                headers: {
+                  Authorization: `Bearer ZP00172 ${getTokendata}`,
+                  "Content-Type": "application/json",
+                },
+                data: data,
+              };
+
+              axios(tokenconfig)
+                .then(function (response) {
+                  // console.log("dataget2", response.data[1]);
+                  axiosThis.tokengetdata.push(response.data[1]);
+                  // console.log("trddtl_s3.token", axiosThis.tokengetdata);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }
+          }
+
+          for (var r = 0; r < axiosThis.sumget.length; r++) {
+            var sumdtl_s1 = axiosThis.sumget[r];
+
+            for (var y = 0; y < sumdtl_s1.length; y++) {
+              var sumdtl_s2 = sumdtl_s1[y];
+              // console.log(sumdtl_s2.token, "sumdtl_s2");
+              axiosThis.summarydetails.push(sumdtl_s1);
+              // console.log(axiosThis.summarydetails, "summarydetails");
+
+              // ////////////////////////
+              var sumdata = JSON.stringify({
+                userId: "ZP00172",
+                scripList: "nse_cm|212,nse_cm|" + sumdtl_s2.token,
+              });
+
+              var sumtokenconfig = {
+                method: "post",
+                url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+                headers: {
+                  Authorization: `Bearer ZP00172 ${getTokendata}`,
+                  "Content-Type": "application/json",
+                },
+                data: sumdata,
+              };
+
+              axios(sumtokenconfig)
+                .then(function (response) {
+                  // console.log("dataget2", response.data[1]);
+                  axiosThis.sumtokendata.push(response.data[1]);
+                  // console.log("sumtokendata", axiosThis.sumtokendata);
+                })
+                .catch(function (error) {
+                  console.log(error);
+                });
+            }
+          }
+          setTimeout(function () {
+            // console.table("dataget",axiosThis.tokengetdata, "a",axiosThis.tradedetails);
+
+            for (var o = 0; o < axiosThis.tradedetails.length; o++) {
+              for (var w = 0; w < axiosThis.tradedetails.length; w++) {
+                // console.log(axiosThis.tradedetails[o].token,"\\\\",w,"||",axiosThis.tokengetdata[w].token,"\\\\\\",o)
+
+                if (
+                  axiosThis.tradedetails[o].token ==
+                  axiosThis.tokengetdata[w].token
+                ) {
+                  axiosThis.tradedetails[o]["Ltp"] = Number(
+                    axiosThis.tokengetdata[w].ltp
+                  );
+                  axiosThis.tradedetails[o]["Net_rate"] =
+                    axiosThis.tradedetails[o].Net_Value /
+                    axiosThis.tradedetails[o].Quantity;
+                  axiosThis.tradedetails[o]["Mtm"] =
+                    (axiosThis.tradedetails[o].Ltp -
+                      axiosThis.tradedetails[o].Net_rate) *
+                    axiosThis.tradedetails[o].Quantity;
+                  // }
+                }
+              }
+              var datedatas1 = axiosThis.tradedetails[o];
+              axiosThis.tableDataFinal.push(datedatas1);
+              axiosThis.tableDatafinalvalue.push(
+                {
+                  "Trade_Date": datedatas1.SecurityOrContract.match(/\((.*?)\)/)[1],
+                  "Buy_Qty": '',
+                  "Buy_Rate": "",
+                  "Sell_Qty": "",
+                  "Sell_Rate": "",
+                  "Net_Qty": "",
+                  "Net_Rate": "",
+                  "MTM": ""
+                },
+                {
+                  "Trade_Date": datedatas1.Trade_Date,
+                  "Buy_Qty": datedatas1.Buy_Quantity,
+                  "Buy_Rate": datedatas1.Buy_Price.toFixed(2),
+                  "Sell_Qty": datedatas1.Sell_Quantity,
+                  "Sell_Rate": datedatas1.Sell_Price.toFixed(2),
+                  "Net_Qty": datedatas1.Quantity,
+                  "Net_Rate": datedatas1.Ltp,
+                  "MTM": datedatas1.Mtm.toFixed(2)
+                })
+            }
+            axiosThis.tableDatafinalvalue.push({
+              "Trade_Date": (`${axiosThis.tableDataFinal.length}${"  Profit & Loss"}`),
+              "Buy_Qty": '',
+              "Buy_Rate": "",
+              "Sell_Qty": "",
+              "Sell_Rate": "",
+              "Net_Qty": "",
+              "Net_Rate": "",
+              "MTM": axiosThis.totals.Mtm
+            })
+            // axiosThis.tableDatafinalvalue.push({
+            //   "Trade Date":(`${axiosThis.tableDatafinal.legnth}${"  Profit & Loss"}`),
+            //   "Buy Qty":'',
+            //   "Buy Rate":"",
+            //   "Sell Qty":"",
+            //   "Sell Rate":"",
+            //   "Net Qty": "",
+            //   "Net Rate": "",
+            //   "MTM": axiosThis.totals.Mtm
+            // })
+            // console.log(axiosThis.tableDatafinalvalue)
+          }, 1000);
+          setTimeout(function () {
+            for (var p = 0; p < axiosThis.summarydetails.length; p++) {
+              for (var u = 0; u < axiosThis.summarydetails.length; u++) {
+                // console.log(axiosThis.summarydetails[p][0].token, "\\\\", w, "||", axiosThis.sumtokendata[u].token, "\\\\\\", o, "iuytrdf")
+
+                if (
+                  axiosThis.summarydetails[p][0].token ==
+                  axiosThis.sumtokendata[u].token
+                ) {
+                  axiosThis.summarydetails[p][0]["Ltp"] = Number(
+                    axiosThis.sumtokendata[u].ltp
+                  );
+                  axiosThis.summarydetails[p][0]["Net_rate"] =
+                    axiosThis.summarydetails[p][0].Net_Value /
+                    axiosThis.summarydetails[p][0].Quantity;
+                  axiosThis.summarydetails[p][0]["Mtm"] =
+                    (axiosThis.summarydetails[p][0].Ltp -
+                      axiosThis.summarydetails[p][0].Net_rate) *
+                    axiosThis.summarydetails[p][0].Quantity;
+                  // }
+                }
+              }
+              var summdatas1 = axiosThis.summarydetails[p][0];
+              // console.log(summdatas1, "summdatas1");
+
+              axiosThis.summDataFinal.push(summdatas1);
+              axiosThis.summDataFinalvalue.push({
+                "SecurityOrContract": summdatas1.SecurityOrContract.match(/\((.*?)\)/)[1],
+                "Buy_Qty": summdatas1.Buy_Quantity,
+                "Buy_Rate": summdatas1.Buy_Price,
+                "Sell_Qty": summdatas1.Sell_Quantity,
+                "Sell_Rate": summdatas1.Sell_Price,
+                "Net_Qty": summdatas1.Quantity,
+                "Net_Rate": summdatas1.Net_rate,
+                "LTP": summdatas1.Ltp,
+                "MTM": summdatas1.Mtm
+              });
+
+            }
+            axiosThis.summDataFinalvalue.push({
+              "SecurityOrContract": (`${axiosThis.summDataFinal.length}${" holdings"}`),
+              "Buy_Qty": "",
+              "Buy_Rate": "",
+              "Sell_Qty": "",
+              "Sell_Rate": "",
+              "Net_Qty": "",
+              "Net_Rate": "",
+              "LTP": "",
+              "MTM": axiosThis.summtotal.Mtm
+            })
+
+          }, 1000);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    methods: {
+      plpdf() {
+
+        var doc = new jsPDF('l', 'mm', 'a4')
+        var row = [];
+        var head = [
+          "Trade Date",
+          "Buy Qty",
+          "Buy Rate",
+          "Sell Qty",
+          "Sell Rate",
+          "Net Qty",
+          "Net Rate",
+          "MTM",
+        ];
+
+        var items = this.tableDatafinalvalue;
+        items.forEach(e => {
+          //              "Trade_Date": 
+          //             "Buy_Qty": '',
+          //             "Buy_Rate": "",
+          //             "Sell_Qty": "",
+          //             "Sell_Rate": "",
+          //             "Net_Qty": "",
+          //             "Net_Rate": "",
+          //             "MTM": ""
+          var table = [e.Trade_Date,
+          e.Buy_Qty,
+          e.Buy_Rate,
+          e.Sell_Qty,
+          e.Sell_Rate,
+          e.Net_Qty,
+          e.Net_Rate,
+          e.MTM]
+          row.push(table);
+
+        })
+        // doc.autoTable( head, rows.reverse() , {margin :{top:10}, height:'auto',theme: 'plain',
+        // headStyles :{fontSize: 10,fillColor : '#F9FBFC',textColor: 20 ,halign: 'left',}, alternateRowStyles: {fillColor : '#F9FBFC'},styles: { overflow: 'linebreak', },
+        //     columnStyles: {1: {cellWidth: 'auto'}}})
+        autoTable(doc, {
+          head: [head], body: row, startY: 70, didDrawCell: (data) => {
+            // doc.setFontSize(15);
+            //     doc.setTextColor(20);
+            //     doc.text(("PROFIT & LOSS"),data.settings.margin.left + 110, 6)
+            doc.setFontSize(15);
+            doc.setTextColor(5);
+            doc.text(localStorage.decryptedstoredname, data.settings.margin.left + 110, 6)
+            var str = "Page " + doc.internal.getNumberOfPages();
+            doc.setFontSize(10);
+            var pageSize = doc.internal.pageSize;
+            var pageHeight = pageSize.height
+              ? pageSize.height
+              : pageSize.getHeight();
+            doc.text(str, data.settings.margin.left, pageHeight - 10);
+          }
+
+          , margin: { top: 10 }, height: 'auto', theme: 'grid',
+          headStyles: { fontSize: 10, fillColor: '#F9FBFC', textColor: 20, halign: 'left', }, tableLineWidth: 0.1, alternateRowStyles: { fillColor: '#F9FBFC' }, styles: { overflow: 'linebreak', },
+          columnStyles: { 2: { cellWidth: 'auto' } }
+        })
+        doc.save("P&L.pdf");
+      },
+    },
+    computed: {
+      totals() {
+        const totals = this.tableDataFinal.reduce(
+          (acc, d) => {
+            acc.Quantity += d.Quantity;
+            acc.Mtm += d.Mtm;
+            this.tradedetailsloader = false;
+            this.downloadbtn = true;
+            if (this.pnltab == 0) {
+              this.PLSummarybtndwn = true;
+              this.PLbtndwn = false;
+            }
+            if (this.pnltab == 1) {
+              this.PLbtndwn = true;
+              this.PLSummarybtndwn = false;
+            }
+            return acc;
+          },
+          {
+            Mtm: 0,
+            none: "",
+          }
+        );
+        totals.Mtm = totals.Mtm.toFixed(2)
+
+        return totals;
+      },
+      summtotal() {
+        const summtotal = this.summDataFinal.reduce(
+          (acc, d) => {
+            acc.Quantity += d.Quantity;
+            acc.Mtm += d.Mtm;
+            this.tradedetailsloader = false;
+            this.downloadbtn = true;
+            return acc;
+          },
+          {
+            Mtm: 0,
+            none: "",
+          }
+        );
+        summtotal.Mtm = summtotal.Mtm.toFixed(2)
+        console.log(summtotal.Mtm)
+        return summtotal;
+      },
+
+      summarydetailshead() {
+        return [
+          {
+            text: "SecurityOrContract",
+            value: "SecurityOrContract",
+            sortable: false,
+            filter: (f) => {
+              return (f + "")
+                .toUpperCase()
+                .includes(this["PLName"].toUpperCase());
+            },
+          },
+          {
+            text: "Buy Qty",
+            value: "Buy_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Buy Rate",
+            value: "Buy_Price",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Qty",
+            value: "Sell_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Rate",
+            value: "Sell_Price",
+            align: "right",
+            sortable: false,
+          },
+          { text: "Net Qty", value: "Quantity", align: "right", sortable: false },
+          {
+            text: "Net Rate",
+            value: "Net_rate",
+            align: "right",
+            sortable: false,
+          },
+          { text: "LTP", value: "Ltp", align: "right", sortable: false },
+          { text: "MTM", value: "Mtm", align: "right", sortable: false },
+        ];
+      },
+
+      datedetailshead() {
+        return [
+          {
+            text: "Trade Date", value: "Trade_Date", sortable: true,
+            // filter: (f) => {
+            //     return (f + "")
+            //       .toUpperCase()
+            //       .includes(this["Trade Date"].toUpperCase());
+            //   },
+          },
+          {
+            text: "SecurityOrContract",
+            value: "SecurityOrContract",
+            sortable: false,
+
+          },
+          {
+            text: "Buy Qty",
+            value: "Buy_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Buy Rate",
+            value: "Buy_Price",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Qty",
+            value: "Sell_Quantity",
+            align: "right",
+            sortable: false,
+          },
+          {
+            text: "Sell Rate",
+            value: "Sell_Price",
+            align: "right",
+            sortable: false,
+          },
+          { text: "Net Qty", value: "Quantity", align: "right", sortable: false },
+          {
+            text: "Net Rate",
+            value: "Net_rate",
+            align: "right",
+            sortable: false,
+          },
+          { text: "LTP", value: "Ltp", align: "right", sortable: false },
+          { text: "MTM", value: "Mtm", align: "right", sortable: false },
+        ];
+      },
+      // dateRangeText() {
+      //   return this.dates.join(" ~ ");
+      // },
+    },
+    components: { "vue-json-to-csv": VueJsonToCsv },
+    // CalendarProfitlose
+  };
+</script>
+
+<style>
+  .trdditl::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .trdditl::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .trdditl::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.6);
+    border-radius: 16px;
+  }
+
+  .toolbar .v-toolbar__content {
+    padding: 0 !important;
+  }
+
+  .datedetailshead .v-data-table-header__sort-badge {
+    display: none !important;
+  }
+</style>
+
+<!-- nexttry code end -->
+
+<template>
+  <v-app>
+    <v-container class="pa-0 pa-sm-3 pa-md-3">
+      <div class="pt-16 pa-6 pa-sm-4 pa-md-4">
+        <v-row>
+          <v-col cols="12" sm="12" md="8">
+            <v-row>
+              <v-col cols="6">
+                <p class="lstctntit headline mb-1">Profit & Loss</p>
+              </v-col>
+              <v-col cols="6" class="d-md-none text-right px-0">
+                <v-btn style="text-transform: capitalize" class="elevation-0" small color="#F9FBFC">
+                  <v-icon size="15">mdi-format-align-bottom</v-icon>Filter
+                  actions
+                </v-btn>
+              </v-col>
+            </v-row>
+            <p class="body-1 mb-0 mb-sm-2 mb-md-2" color="#878B93">
+              Profit and Loss for your trades.
+            </p>
+          </v-col>
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <!-- <v-select prepend-inner-icon="mdi-chart-arc" append-icon="mdi-chevron-down" class="rounded-lg" color="gray"
+              dense label="Select Segment" single-line outlined></v-select> -->
+            <!-- <v-col class="pr-0 pb-0 d-none d-md-flex" cols="6" sm="2" md="2"> -->
+            <div> <v-badge v-if="clientids.length > 1" bordered color="#FF8D24" :content="clientids.length" overlap>
+                <v-select v-model="cli" @change="dateWise" :items="clientids"
+                  append-icon="mdi-chevron-down" class="rounded-lg" color="gray" dense single-line return-object
+                  outlined>
+                </v-select>
+              </v-badge>
+              <div v-else-if="clientids.length == 0"></div>
+              <v-select v-else v-model="cli" @change="dateWise" :items="clientids"
+                append-icon="mdi-chevron-down" class="rounded-lg" color="gray" dense single-line return-object outlined>
+              </v-select>
+            </div>
+            <!-- </v-col> -->
+          </v-col>
+
+          <v-col class="pr-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <!-- <v-text-field dense color="gray" outlined class="rounded-lg" label="Search SymbolName"
+              prepend-inner-icon="mdi-magnify"></v-text-field> -->
+            <v-text-field v-model="PLName" dense color="gray" outlined class="rounded-lg mx-4 d-none d-md-flex"
+              label="Search" prepend-inner-icon="mdi-magnify" @input="PLName = PLName.toUpperCase()">
+            </v-text-field>
+          </v-col>
+          <!-- <v-col class="px-0 pb-0 d-none d-md-flex" cols="4" sm="2" md="2">
+            <v-btn class="font-weight-black" text color="#1877F2"
+              >Filter activity</v-btn
+            >
+          </v-col> -->
+        </v-row>
+
+        <div>
+          <CalendarProfitlose />
+        </div>
+
+        <div class="mt-6">
+          <div>
+            <v-card outlined class="d-md-none elevation-0 rounded-lg pa-4 pb-0">
+              <v-row class="py-2">
+                <v-col cols="5">
+                  <p class="caption" 
+                  style="color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    ">
+                    Realised P&L
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <div v-if="totals.Quantity == 0">
+                    <p v-if="totals.Mtm > 0" class="ctnbtl body-1 mb-0 text-right"
+                      style="line-height: 28px; color: #34a853">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                    <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px; color: #e12626">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                  </div>
+                  <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px">
+                    0.00
+                  </p>
+                </v-col>
+              </v-row>
+              <v-divider></v-divider>
+              <v-row class="py-2">
+                <v-col cols="5">
+                  <p class="caption" style="
+                      color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    ">
+                    Unrealised P&L
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <div v-if="totals.Quantity != 0">
+                    <p v-if="totals.Mtm > 0" class="ctnbtl body-1 mb-0 text-right"
+                      style="line-height: 28px; color: #34a853">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                    <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px; color: #e12626">
+                      {{ totals.Mtm.toLocaleString() }}
+                    </p>
+                  </div>
+                  <p v-else class="ctnbtl body-1 mb-0 text-right" style="line-height: 28px">
+                    0.00
+                  </p>
+                </v-col>
+              </v-row>
+              <!-- <v-divider></v-divider> -->
+              <!-- <v-row class="py-2">
+                <v-col cols="5">
+                  <p
+                    class="caption"
+                    style="
+                      color: #ff8d24;
+                      letter-spacing: 0.16em;
+                      text-transform: uppercase;
+                    "
+                  >
+                    Charges & taxes
+                  </p>
+                </v-col>
+                <v-col cols="7">
+                  <p
+                    class="ctnbtl body-1 mb-0 text-right"
+                    style="line-height: 28px; color: #505359"
+                  >
+                    352.85
+                  </p>
+                </v-col>
+              </v-row> -->
+            </v-card>
+
+            <v-card outlined class="d-none d-md-flex elevation-0 rounded-lg">
+              <v-row no-gutters>
+                <v-col>
+                  <div class="pa-4">
+                    <p class="caption mb-0" style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      ">
+                      Realised P&L
+                    </p>
+                    <div v-if="totals.Quantity == 0">
+                      <p v-if="totals.Mtm > 0" class="ctnbtl headline mb-0" style="line-height: 28px; color: #34a853">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                      <p v-else class="ctnbtl headline mb-0" style="line-height: 28px; color: #e12626">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                    </div>
+                    <p v-else class="ctnbtl headline mb-0" style="line-height: 28px">
+                      0.00
+                    </p>
+                  </div>
+                </v-col>
+                <v-divider class="d-none d-md-flex" vertical></v-divider>
+                <v-col>
+                  <div class="pa-4">
+                    <p class="caption mb-0" style="color: #ff8d24; letter-spacing: 0.16em; text-transform: uppercase;
+                      ">
+                      Unrealised P&L
+                    </p>
+                    <div v-if="totals.Quantity != 0">
+                      <p v-if="totals.Mtm > 0" class="ctnbtl headline mb-0" style="line-height: 28px; color: #34a853">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                      <p v-else class="ctnbtl headline mb-0" style="line-height: 28px; color: #e12626">
+                        {{ totals.Mtm.toLocaleString() }}
+                      </p>
+                    </div>
+
+                    <p v-else class="ctnbtl headline mb-0" style="line-height: 28px">
+                      0.00
+                    </p>
+                  </div>
+                </v-col>
+                <!-- <v-divider class="d-none d-md-flex" vertical></v-divider> -->
+                <!-- <v-col>
+                  <div class="pa-4">
+                    <p
+                      class="caption mb-0"
+                      style="
+                        color: #ff8d24;
+                        letter-spacing: 0.16em;
+                        text-transform: uppercase;
+                      "
+                    >
+                      Charges & taxes
+                    </p>
+                    <p
+                      class="ctnbtl headline mb-0"
+                      style="line-height: 28px; color: #505359"
+                    >
+                      352<small>.85</small>
+                    </p>
+                  </div>
+                </v-col> -->
+              </v-row>
+            </v-card>
+          </div>
+          <div class="mt-2 mt-sm-0 mt-md-0">
+            <v-toolbar color="transparent" class="elevation-0 px-0 toolbar">
+              <v-col cols="8" class="px-0">
+                <v-tabs v-model="pnltab" flat background-color="transparent" color="#1877F2"
+                  active-class="font-weight-bold">
+                  <v-tab>P&L Summary</v-tab>
+                  <v-tab>P&L</v-tab>
+                </v-tabs>
+              </v-col>
+              <v-col class="px-0 d-flex justify-end" cols="4">
+                <!-- <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download -->
+                <!-- </v-btn> -->
+
+                <!-- <v-menu v-if="downloadbtn" offset-y transition="slide-y-transition">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-bind="attrs" v-on="on" text color="#878B93"><img class="pr-2"
+                      src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </template>
+                <v-card class="elevation-0 py-2 px-1" color="white">
+                  <v-btn @click="plpdf()" text block color="#878B93" class="text-capitalize">PDF document</v-btn>
+
+                  <div v-if="PLSummarybtndwn">
+                    <vue-json-to-csv :json-data="summDataFinalvalue" :csv-title="'overviews.csv'">
+                      <v-btn text block color="#878B93" class="text-capitalize">Excell sheet
+                      </v-btn>
+                    </vue-json-to-csv>
+                  </div>
+                  <div v-if="PLbtndwn">
+                    <vue-json-to-csv :json-data="tableDatafinalvalue" :csv-title="'overviews.csv'">
+                      <v-btn text block color="#878B93" class="text-capitalize">Excell sheet
+                      </v-btn>
+                    </vue-json-to-csv>
+                  </div>
+                </v-card>
+              </v-menu> -->
+
+
+              </v-col>
+            </v-toolbar>
+
+            <v-tabs-items v-model="pnltab">
+              <v-tab-item>
+                <!-- <vue-json-to-csv :json-data="summDataFinalvalue" :csv-title="'overviews.csv'" :label="{}">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv> -->
+                <div class="trdditl py-4">
+                  <v-data-table :loading="tradedetailsloader" fixed-header disable-filtering mobile-breakpoint
+                    :headers="summarydetailshead" :items="summDataFinal" item-key="PLName" :search="searchName"
+                    hide-default-footer style="border: 1px solid #efeef3" class="datedetailshead elevation-0 rounded-lg"
+                    :page.sync="sumpage" :items-per-page="10" @page-count="sumpageCount = $event">
+                    <template v-slot:[`footer`]>
+                      <v-divider></v-divider>
+                      <div class="text-center py-2">
+                        <v-pagination v-model="sumpage" :length="sumpageCount"></v-pagination>
+                      </div>
+                    </template>
+                    <template v-slot:[`item.SymbolName`]="{ item }">
+                      {{ item.SymbolName }}
+                    </template>
+                    <template v-slot:[`item.Buy_Price`]="{ item }">
+                      <div>{{ item.Buy_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Sell_Price`]="{ item }">
+                      <div>{{ item.Sell_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Net_rate`]="{ item }">
+                      <div>{{ Math.abs(item.Net_rate.toFixed(2)) }}</div>
+                    </template>
+                    <template v-slot:[`item.Ltp`]="{ item }">
+                      <div>{{ item.Ltp.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Mtm`]="{ item }">
+                      <div>{{ item.Mtm.toFixed(2) }}</div>
+                    </template>
+                    <template v-if="usertotaldata" v-slot:[`body.append`]>
+                      <tr class="black--text">
+                        <td class="text-left">
+                          <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                            style="background-color: #e8ebed; color: #505359">{{ summDataFinal.length }} Profit &
+                            Loss</span>
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td>
+                          {{ summtotal.none }}
+                        </td>
+                        <td class="subtitle-1 text-right font-weight-medium">
+                          {{ summtotal.Mtm.toLocaleString() }}
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-if="usernodata" v-slot:no-data>
+                      <v-col class="mx-auto pa-15">
+                        <v-img class="align-self-stretch mx-auto" width="100px"
+                          :src="require('@/assets/no data folder.svg')" />
+                        <h4>No data available</h4>
+                      </v-col>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-tab-item>
+              <v-tab-item>
+                <!-- <vue-json-to-csv :json-data="tableDatafinalvalue" :csv-title="'overviews.csv'">
+                  <v-btn text color="#878B93"><img class="pr-2" src="@/assets/download icon.svg" width="25px" />Download
+                  </v-btn>
+                </vue-json-to-csv> -->
+                <div class="trdditl py-4">
+                  <v-data-table group-by="SymbolName" :loading="tradedetailsloader" fixed-header
+                    :sort-by="['Trade_Date']" must-sort multi-sort :sort-desc="[false]" mobile-breakpoint
+                    :headers="datedetailshead" :items="tableDataFinal" hide-default-footer
+                    style="border: 1px solid #efeef3" class="datedetailshead elevation-0 rounded-lg" :page.sync="page"
+                    :items-per-page="10" @page-count="pageCount = $event">
+                    <template v-slot:[`footer`]>
+                      <v-divider></v-divider>
+                      <div class="text-center py-2">
+                        <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                      </div>
+                    </template>
+                    <template v-slot:[`group.header`]="{ items }">
+                      <td>
+                        <strong>{{ items[0].SymbolName }}</strong>
+                      </td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </template>
+                    <template v-slot:[`item.SymbolName`]="{ item }">
+                      {{ item.SymbolName }}
+                    </template>
+                    <template v-slot:[`item.Buy_Price`]="{ item }">
+                      <div>{{ item.Buy_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Sell_Price`]="{ item }">
+                      <div>{{ item.Sell_Price.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Net_rate`]="{ item }">
+                      <div>{{ Math.abs(item.Net_rate.toFixed(2)) }}</div>
+                    </template>
+                    <template v-slot:[`item.Ltp`]="{ item }">
+                      <div>{{ item.Ltp.toFixed(2) }}</div>
+                    </template>
+                    <template v-slot:[`item.Mtm`]="{ item }">
+                      <div>{{ item.Mtm.toFixed(2) }}</div>
+                    </template>
+                    <template v-if="usertotaldata" v-slot:[`body.append`]>
+                      <tr class="black--text">
+                        <td class="text-left">
+                          <span class="subtitle-1 font-weight-medium pa-1 rounded"
+                            style="background-color: #e8ebed; color: #505359">{{ tableDataFinal.length }} Profit &
+                            Loss</span>
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td>
+                          {{ totals.none }}
+                        </td>
+                        <td class="subtitle-1 text-right font-weight-medium">
+                          {{ totals.Mtm.toLocaleString() }}
+                        </td>
+                      </tr>
+                    </template>
+                    <template v-if="usernodata" v-slot:no-data>
+                      <v-col class="mx-auto pa-15">
+                        <v-img class="align-self-stretch mx-auto" width="100px"
+                          :src="require('@/assets/no data folder.svg')" />
+                        <h4>No data available</h4>
+                      </v-col>
+                    </template>
+                  </v-data-table>
+                </div>
+              </v-tab-item>
+
+            </v-tabs-items>
+          </div>
+        </div>
+      </div>
+    </v-container>
+    <v-snackbar style="z-index: 2 !important;" transition="slide-x-reverse-transition" v-model="snackbar"
+      :timeout="2000" :value="true" color="warning" absolute outlined top right>
+      <v-icon color="warning">mdi-alert-outline</v-icon>
+      Session <strong>expired</strong> Kindly Login again.
+    </v-snackbar>
+  </v-app>
+</template>
+
+<script>
+import { apiurl } from "../../apiUrl";
+import axios from "axios";
+import CalendarProfitlose from "@/views/heatmap calendars/CalendarProfitlose.vue";
+// import VueJsonToCsv from "vue-json-to-csv";
+export default {
+  data() {
+    return {
+      snackbar: false,
+      sumpage: 1,
+      sumpageCount: 0,
+      page: 1,
+      pageCount: 0,
+      cli: '',
+      pnltab: null,
+      usertotaldata: true,
+      usernodata: false,
+      PLName: '',
+      PLSummarybtndwn: false,
+      PLbtndwn: false,
+      searchName: '',
+      dates: [""],
+      tradedetailsloader: true,
+      downloadbtn: false,
+
+      datesummary: [],
+      dataget: [],
+      sumget: [],
+      profitlossdatewise: [],
+      summaryprofitloss: [],
+      toks: [],
+      sumtoks: [],
+      tokengetdata: [],
+      sumtokendata: [],
+      tableDataFinal: [],
+      summDataFinal: [],
+
+      summDataFinalvalue: [],
+      currentItems: [],
+      tableDatafinalvalue: [],
+      clientids: [],
+      emailDatafetch: [],
+    };
+  },
+
+  methods: {
+    checkClientSync() {
+      var gauthclientseassion = localStorage.clientsessionstore
+      var email = localStorage.getItem('decryptedstoredData')
+
+      var data = JSON.stringify({
+        email: email,
+      });
+
+      var config = {
+        method: "post",
+        url: `${apiurl}/syncEmailDetails`,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': gauthclientseassion
+        },
+        data: data,
+      };
+      var axiosThis = this
+      axios(config)
+        .then(function (response) {
+          console.warn("&&&e", response);
+          if (response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid.") {
+            axiosThis.snackbar = true;
+            setTimeout(function () {
+
+              axiosThis.$router.push("/signin");
+            }, 2000);
+          }
+
+          axiosThis.emailDatafetch = response.data.Data;
+          console.log("clientIds", response.data.msg)
+          console.log("491--2", response)
+          if (response.data.msg == 'No Email Sync data available for User') {
+            axiosThis.tradedetailsloader = false;
+            axiosThis.usernodata = true;
+          }
+          for (var d = 0; d < axiosThis.emailDatafetch.length; d++) {
+            var clientIds = axiosThis.emailDatafetch[d].clientID;
+            console.log("clientIds", clientIds, d)
+            axiosThis.clientids.push(axiosThis.emailDatafetch[d].clientID);
+          }
+          axiosThis.cli = axiosThis.clientids[0]
+          axiosThis.dateWise()
+
+        }).catch(function (err) {
+          console.log(err)
+        })
+    },
+    dateWise() {
+      this.tradedetailsloader = true;
+      var gauthclientseassion = localStorage.clientsessionstore
+      // var gauthclientseassion = localStorage.clientsessionstore
+      var getTokendata = localStorage.getItem("getTokendata")
+
+      var axiosThis = this
+      var clientIds = this.cli
+      console.log("//||", clientIds);
+
+
+      var data = JSON.stringify({
+        clientid: clientIds,
+      });
+
+      var config = {
+        method: "post",
+        url: `${apiurl}/datesummary`,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': gauthclientseassion
+        },
+        data: data,
+      };
+      axios(config)
+        .then(function (response) {
+          axiosThis.datesummary = []
+
+          console.log("//", response.data);
+          axiosThis.datesummary = response.data.data;
+          if (response.data.msg == "No Data Available") {
+            axiosThis.summDataFinal = []
+            axiosThis.usernodata = true;
+            axiosThis.tradedetailsloader = false;
+            axiosThis.usertotaldata = false;
+          }
+          else {
+            axiosThis.usertotaldata = true;
+
+            console.log("datesummary", axiosThis.datesummary);
+            axiosThis.dataget = []
+            axiosThis.sumget = []
+
+            for (var i = 0; i < axiosThis.datesummary.length; i++) {
+              axiosThis.dataget.push(axiosThis.datesummary[i].day_wise);
+              axiosThis.sumget.push(axiosThis.datesummary[i].summary);
+            }
+            console.log(axiosThis.sumget, "sumget-1");
+
+            ///////////////////////////summary profit and loss code start///////////////////////////////
+            axiosThis.sumtoks = []
+            axiosThis.summaryprofitloss = []
+
+            for (var m = 0; m < axiosThis.sumget.length; m++) {
+              var sumdtl_s1s = axiosThis.sumget[m];
+              // console.log(sumdtl_s1s, "sumget-1");
+              for (var n = 0; n < sumdtl_s1s.length; n++) {
+                console.log(sumdtl_s1s[n], "sumget s1");
+                if (sumdtl_s1s[n].token != "") {
+                  console.log(sumdtl_s1s[n], "sumdtl_s1s")
+                  axiosThis.sumtoks.push("nse_cm" + '|' + sumdtl_s1s[n].token)
+                  axiosThis.summaryprofitloss.push(sumdtl_s1s[n])
+                } else {
+                  console.log(sumdtl_s1s[n], "if else");
+                }
+              }
+            }
+            console.log(axiosThis.sumtoks, "sumitok")
+            let uniqueChars = [...new Set(axiosThis.sumtoks)]
+            var sumtokes = uniqueChars.join()
+            console.log("tokes", sumtokes)
+            var sumdata = JSON.stringify({
+              userId: "ZP00172",
+              scripList: sumtokes,
+            });
+            axiosThis.sumtokendata = []
+            var sumtokenconfig = {
+              method: "post",
+              url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+              headers: {
+                Authorization: `Bearer ZP00172 ${getTokendata}`,
+                "Content-Type": "application/json",
+              },
+              data: sumdata,
+            };
+
+            axios(sumtokenconfig)
+              .then(function (response) {
+                console.log("sumget2-1", response.data);
+                axiosThis.sumtokendata.push(response.data);
+                console.log("sumget2 tok", axiosThis.sumtokendata);
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+
+
+            ///////////////////////////summary profit and loss code end///////////////////////////////
+
+            ///////////////////////////day_wise profit and loss code start///////////////////////////////
+            axiosThis.toks = []
+            axiosThis.profitlossdatewise = []
+            for (var l = 0; l < axiosThis.dataget.length; l++) {
+              var trddtl_s1s = axiosThis.dataget[l];
+              // console.log(axiosThis.dataget[l], "dataget");
+              for (var q = 0; q < trddtl_s1s.length; q++) {
+                console.log(trddtl_s1s[q], "dataget s1");
+                if (trddtl_s1s[q].token != "") {
+                  console.log(trddtl_s1s[q], "iftrddtl_s1s")
+                  axiosThis.toks.push("nse_cm" + '|' + trddtl_s1s[q].token)
+                  axiosThis.profitlossdatewise.push(trddtl_s1s[q])
+                } else {
+                  console.log(trddtl_s1s[q].token, "if else");
+                }
+              }
+            }
+            console.log(axiosThis.toks, "itok")
+
+            var tokes = axiosThis.toks.join()
+            console.log("tokes", tokes)
+            var data = JSON.stringify({
+              userId: "ZP00172",
+              scripList: tokes,
+            });
+            axiosThis.tokengetdata = []
+            var tokenconfig = {
+              method: "post",
+              url: "https://www.zebull.in/rest/MobullService/api/marketWatch/scripsMW",
+              headers: {
+                Authorization: `Bearer ZP00172 ${getTokendata}`,
+                "Content-Type": "application/json",
+              },
+              data: data,
+            };
+
+            axios(tokenconfig)
+              .then(function (response) {
+                // console.log("dataget2", response.data);
+                axiosThis.tokengetdata.push(response.data);
+                console.log("dataget2 tok", axiosThis.tokengetdata[0], "dataget2 res", axiosThis.profitlossdatewise);
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+
+            setTimeout(function () {
+              axiosThis.tableDataFinal = []
+              console.log("eeeee", axiosThis.profitlossdatewise);
+              // var listedProfitlossdatewise = axiosThis.profitlossdatewise
+              var tableDataFinall = []
+
+              for (var e = 0; e < axiosThis.profitlossdatewise.length; e++) {
+                console.log("eeeee", axiosThis.profitlossdatewise.length, "//", e, "\\", axiosThis.tokengetdata);
+                //  for (let q in axiosThis.tokengetdata) {
+                //    // if (axiosThis.profitlossdatewise[e].token == axiosThis.tokengetdata[e][q].token) {
+                //      console.log("!!!", axiosThis.profitlossdatewise[e].token ,'||',axiosThis.tokengetdata[q]);
+
+                //  }
+                for (var x = 0; x < axiosThis.tokengetdata[0].length; x++) {
+                  console.log("eeeee", axiosThis.profitlossdatewise[e].token, "||", axiosThis.tokengetdata[0][x].token);
+
+                  if (axiosThis.profitlossdatewise[e].token == axiosThis.tokengetdata[0][x].token) {
+                    console.warn("eeeee", "PAIRED");
+
+                    axiosThis.profitlossdatewise[e]["Ltp"] = Number(
+                      axiosThis.tokengetdata[0][x].ltp
+                    );
+
+                    axiosThis.profitlossdatewise[e]["Net_rate"] =
+                      axiosThis.profitlossdatewise[e].Net_Value /
+                      axiosThis.profitlossdatewise[e].Quantity;
+
+                    axiosThis.profitlossdatewise[e]["Mtm"] =
+                      (axiosThis.profitlossdatewise[e].Ltp -
+                        axiosThis.profitlossdatewise[e].Net_rate) *
+                      axiosThis.profitlossdatewise[e].Quantity;
+
+                    var vartableData = axiosThis.profitlossdatewise[e];
+                    tableDataFinall.push(vartableData);
+                    let uniqueChars = [...new Set(tableDataFinall)];
+                    axiosThis.tableDataFinal = uniqueChars
+                    console.log("okok", uniqueChars)
+                    console.log(uniqueChars);
+                    console.log("qwewr-if", axiosThis.tableDataFinal)
+
+                  } else {
+                    console.log("---else----")
+                  }
+                }
+              }
+              console.log("axiosThis.tableDataFinal", axiosThis.tableDataFinal)
+            }, 2000)
+
+
+            setTimeout(function () {
+
+              console.log("qwewr-1", axiosThis.summaryprofitloss)
+              console.log("qwewr-1", axiosThis.sumtokendata)
+              axiosThis.summDataFinal = []
+
+              for (let f in axiosThis.summaryprofitloss) {
+                // console.log("qwewr-1", axiosThis.summaryprofitloss.length, axiosThis.sumtokendata[0][f].token);
+                if (axiosThis.summaryprofitloss[f].token == axiosThis.sumtokendata[0][f].token) {
+                  console.log("qwewr-1", axiosThis.summaryprofitloss[f].token);
+
+                  axiosThis.summaryprofitloss[f]["Ltp"] = Number(
+                    axiosThis.sumtokendata[0][f].ltp
+                  );
+
+                  if (axiosThis.summaryprofitloss[f].Quantity == 0) {
+                    axiosThis.summaryprofitloss[f]["Net_rate"] =
+                      axiosThis.summaryprofitloss[f].Quantity / axiosThis.summaryprofitloss[f].Net_Value;
+                  } else {
+                    axiosThis.summaryprofitloss[f]["Net_rate"] =
+                      axiosThis.summaryprofitloss[f].Net_Value /
+                      axiosThis.summaryprofitloss[f].Quantity;
+                  }
+
+                  axiosThis.summaryprofitloss[f]["Mtm"] =
+                    (axiosThis.summaryprofitloss[f].Ltp -
+                      axiosThis.summaryprofitloss[f].Net_rate) *
+                    axiosThis.summaryprofitloss[f].Quantity;
+                  var varsummtableData = axiosThis.summaryprofitloss[f];
+                  axiosThis.summDataFinal.push(varsummtableData);
+                  console.log("sumqwewr if", axiosThis.summaryprofitloss)
+
+                } else {
+                  console.log("sumqwewr else", axiosThis.summaryprofitloss)
+                }
+              }
+              console.log("axiosThis.summDataFinal", axiosThis.summDataFinal)
+            }, 4000)
+
+          }
+          ///////////////////////////day_wise profit and loss code end///////////////////////////////
+        })
+
+
+        .catch(function (error) {
+          console.log(error);
+        });
+
+    }
+  },
+
+  mounted() {
+    this.checkClientSync()
+    // var email = localStorage.getItem('decryptedstoredData')
+
+
+  },
+
+  computed: {
+    totals() {
+      const totals = this.tableDataFinal.reduce(
+        (acc, d) => {
+          acc.Quantity += d.Quantity;
+          acc.Mtm += d.Mtm;
+          this.tradedetailsloader = false;
+          this.downloadbtn = true;
+          if (this.pnltab == 0) {
+            this.PLSummarybtndwn = true;
+            this.PLbtndwn = false;
+          }
+          if (this.pnltab == 1) {
+            this.PLbtndwn = true;
+            this.PLSummarybtndwn = false;
+          }
+          return acc;
+        },
+        {
+          Mtm: 0,
+          none: "",
+        }
+      );
+      totals.Mtm = totals.Mtm.toFixed(2)
+
+      return totals;
+    },
+    summtotal() {
+      const summtotal = this.summDataFinal.reduce(
+        (acc, d) => {
+          acc.Quantity += d.Quantity;
+          acc.Mtm += d.Mtm;
+          this.tradedetailsloader = false;
+          this.downloadbtn = true;
+          return acc;
+        },
+        {
+          Mtm: 0,
+          none: "",
+        }
+      );
+      summtotal.Mtm = summtotal.Mtm.toFixed(2)
+      console.log(summtotal.Mtm)
+      return summtotal;
+    },
+
+    summarydetailshead() {
+      return [
+        {
+          text: "SymbolName",
+          value: "SymbolName",
+          sortable: false,
+        },
+        {
+          text: "Buy Qty",
+          value: "Buy_Quantity",
+          align: "right",
+          sortable: false,
+        },
+        {
+          text: "Buy Rate",
+          value: "Buy_Price",
+          align: "right",
+          sortable: false,
+        },
+        {
+          text: "Sell Qty",
+          value: "Sell_Quantity",
+          align: "right",
+          sortable: false,
+        },
+        {
+          text: "Sell Rate",
+          value: "Sell_Price",
+          align: "right",
+          sortable: false,
+        },
+        { text: "Net Qty", value: "Quantity", align: "right", sortable: false },
+        {
+          text: "Net Rate",
+          value: "Net_rate",
+          align: "right",
+          sortable: false,
+        },
+        { text: "LTP", value: "Ltp", align: "right", sortable: false },
+        { text: "MTM", value: "Mtm", align: "right", sortable: false },
+      ];
+    },
+
+    datedetailshead() {
+      return [
+        {
+          text: "Trade Date", value: "Trade_Date", sortable: true,
+        },
+        {
+          text: "SymbolName",
+          value: "SymbolName",
+          sortable: false,
+        },
+        {
+          text: "Buy Qty",
+          value: "Buy_Quantity",
+          align: "right",
+          sortable: false,
+        },
+        {
+          text: "Buy Rate",
+          value: "Buy_Price",
+          align: "right",
+          sortable: false,
+        },
+        {
+          text: "Sell Qty",
+          value: "Sell_Quantity",
+          align: "right",
+          sortable: false,
+        },
+        {
+          text: "Sell Rate",
+          value: "Sell_Price",
+          align: "right",
+          sortable: false,
+        },
+        { text: "Net Qty", value: "Quantity", align: "right", sortable: false },
+        {
+          text: "Net Rate",
+          value: "Net_rate",
+          align: "right",
+          sortable: false,
+        },
+        { text: "LTP", value: "Ltp", align: "right", sortable: false },
+        { text: "MTM", value: "Mtm", align: "right", sortable: false },
+      ];
+    },
+    // dateRangeText() {
+    //   return this.dates.join(" ~ ");
+    // },
+  },
+  components: { CalendarProfitlose },
+  // 
+};
+</script>
+
+<style>
+.trdditl::-webkit-scrollbar {
+  width: 6px;
+}
+
+.trdditl::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.trdditl::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.6);
+  border-radius: 16px;
+}
+
+.toolbar .v-toolbar__content {
+  padding: 0 !important;
+}
+
+.datedetailshead .v-data-table-header__sort-badge {
+  display: none !important;
+}
+</style>

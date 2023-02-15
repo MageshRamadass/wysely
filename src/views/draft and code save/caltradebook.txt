@@ -1,0 +1,155 @@
+<template>
+  <div>
+    <!-- <calendar-heatmap 
+            :values="[{ date: '2018-1-31', count: 1.0 }, { date: '2018-2-28', count: 2.9 }, { date: '2018-3-31', count: 4.3 }, { date: '2018-4-30', count: 2.1 }, { date: '2018-5-31', count: 7.2 }, { date: '2018-6-30', count: 3 },
+            { date: '2018-12-31', count: 1.0 }, { date: '2018-11-28', count: 2.9 }, { date: '2018-10-31', count: 4.3 }, { date: '2018-9-30', count: 2.1 }, { date: '2018-8-31', count: 7.2 }, { date: '2018-7-30', count: 3 }]"
+            :start-date="2018-1-1" end-date="2019-1-1"
+            :range-color="['#E8EBED', '#c453f1', '#8253f1', '#5398f1', '#1877F2']" :vertical="false"
+            tooltip-unit="Hours active" /> -->
+
+    <!-- <div v-for="i in result" :key="i">
+      {{ i.count }}
+      {{ larcount }}
+
+
+    </div> -->
+    max- {{ larcount }}
+
+    <v-row no-gutters>
+      <v-col v-for="i in result" :key="i">
+        <div>
+          <v-tooltip top>
+            <template v-slot:activator="{ on, attrs }">
+              <div v-bind="attrs" v-on="on">
+                <v-card v-if="i.count == 0" width="4px" color="#E8EBED" style="margin: 2px; padding: 6px" outlined tile>
+                </v-card>
+                <v-card v-else-if="i.count < larcount" width="4px" color="#cce1fa" style="margin: 2px; padding: 6px"
+                  outlined tile>
+                </v-card>
+                <v-card v-else-if="i.count < larcount * 2" width="4px" color="#95bef3" style="margin: 2px; padding: 6px"
+                  outlined tile>
+                </v-card>
+                <v-card v-else-if="i.count < larcount * 3" width="4px" color="#5c9ef1" style="margin: 2px; padding: 6px"
+                  outlined tile>
+                </v-card>
+                <v-card v-else-if="i.count > larcount * 3" width="4px" color="#1877F2" style="margin: 2px; padding: 6px"
+                  outlined tile>
+                </v-card>
+              </div>
+            </template>
+            <p class="mb-0 white--text">
+              <span class="font-weight-bold">{{ i.count }} trades </span>on
+              {{
+                new Date(i.date).toLocaleDateString("en-us", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              }}
+            </p>
+          </v-tooltip>
+        </div>
+      </v-col>
+    </v-row>
+
+    <calendar-heatmap :values="result" :start-date="2020 - 1 - 1" end-date="2023-1-1"
+      :range-color="['#E8EBED', '#cce1fa', '#95bef3', '#5c9ef1', '#1877F2']" :vertical="false" tooltip-unit="trade" />
+  </div>
+</template>
+
+<script>
+import { CalendarHeatmap } from "vue-calendar-heatmap";
+import axios from "axios";
+
+import { apiurl } from "../apiUrl";
+export default {
+  data() {
+    return {
+      larcount: 0,
+      database: [],
+      Datetime: [],
+      result: [],
+      data: [],
+
+      count: [],
+      // datareverse: [],
+    };
+  },
+  components: {
+    CalendarHeatmap,
+  },
+  mounted() {
+    var userBrokerClientId = localStorage.getItem('client-id')
+    var gauthclientseassion = localStorage.clientsessionstore;
+    var axiosThis = this;
+    var data = JSON.stringify({
+      // clientid: "ZE1A57",
+      clientid: userBrokerClientId,
+
+    });
+
+    var config = {
+      method: "post",
+      url: `${apiurl}/holdingDetails`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': gauthclientseassion
+      },
+      data: data,
+    };
+    axios(config).then(function (response) {
+      axiosThis.database = response.data.data;
+      // console.log('response yk:',response)
+      for (var i = 0; i < axiosThis.database.length; i++) {
+        axiosThis.data.push(axiosThis.database[i].Data);
+      }
+      // console.log("loop:",axiosThis.data)
+      for (var j = 0; j < axiosThis.data.length; j++) {
+        var data = axiosThis.data[j];
+        // console.log("value",data)
+        for (var k = 0; k < data.length; k++) {
+          axiosThis.Datetime.push(
+            data[k].Trade_Date.slice(-4) +
+            "-" +
+            data[k].Trade_Date.slice(3, 5) +
+            "-" +
+            data[k].Trade_Date.slice(0, 2)
+          );
+        }
+      }
+      var counts = {};
+      var DATE = axiosThis.Datetime;
+      DATE.forEach(function (x) {
+        counts[x] = (counts[x] || 0) + 1;
+      });
+      var dates = counts;
+      axiosThis.result = Object.entries(dates).map(([date, count]) => ({
+        date,
+        count,
+      }));
+      // console.log("max",axiosThis.result)
+      for (var m = 0; m < axiosThis.result.length; m++) {
+        axiosThis.count.push(axiosThis.result[m].count);
+        // console.log("maxaaaa largest", Math.max(axiosThis.count))
+      }
+      // var larg = axiosThis.count;
+      console.log("maxaaaa out", Math.max.apply(null, axiosThis.count));
+      var split = Math.max.apply(null, axiosThis.count);
+      console.log("maxaaaa split", split / 4);
+
+      axiosThis.larcount = split / 4;
+      // var array = axiosThis.count;
+      // var largest = array[0];
+
+      // for (i = 0; i <= largest; i++) {
+      //   if (array[i] > largest) {
+      //     largest = array[i];
+      //     console.log("maxaaaa largest", largest)
+      //   }
+      // }
+
+
+    });
+  },
+};
+</script>
