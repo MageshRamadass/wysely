@@ -29,7 +29,7 @@
                                                     color="#878B93"
                                                     style="text-transform: uppercase; font-weight: 700;">
                                                 </v-list-item-subtitle>
-                                                <p v-html="item.title"></p>
+                                                <p>{{ item.title }}</p>
                                             </v-list-item-content>
                                         </v-list-item>
                                     </template>
