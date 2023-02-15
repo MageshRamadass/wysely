@@ -822,8 +822,6 @@ export default {
       this.tol_tdypre = 0.00;
       this.total_Summary = 0.00;
       this.printsumgetloader = true;
-      // var gauthclientseassion = localStorage.clientsessionstore
-      // var getTokendata = localStorage.getItem("getTokendata")
       let ids;
       if (this.clientidsindex == 'All') {
         ids = this.clientids.filter(function (e) { return e !== 'All' })

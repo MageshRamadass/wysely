@@ -267,11 +267,6 @@ export default {
             accountdatadialog: false,
             completedatadialog: false,
             btnaddacc: false,
-            // //===========Second pop=========
-            // emailfetchdialogsecond: false,
-            // accountdatadialogsecond: true,
-            // completedatadialogsecond: false,
-            // //===========Second pop end========
             dspnoaccounts: false,
             noofaccnt: '0',
             valid: false,
@@ -284,7 +279,6 @@ export default {
             broker: "",
             relationship: "",
             client: '',
-            // feachemail: 'jaxnax22@gmail.com',
             $hostname: "",
             nameRules: [
                 v => !!v || 'Your Name is required',
@@ -292,7 +286,6 @@ export default {
             ],
             panRules: [
                 v => !!v || 'Your PAN is required',
-                // v => /[A-Z]{5}[0-9]{4}\[A-Z]{1}$/.test(v) || 'PAN number must be valid',
 
                 v => /[A-Z]{5}\d{4}[A-Z]$/.test(v) || 'PAN number must be valid',
 
@@ -365,11 +358,9 @@ export default {
                 'client_id': '841602117530-fflcske9v6nltk6spfj4gramgbsmhn0l.apps.googleusercontent.com', // NEW CLIENT ID
 
                 'client_secret': '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', // NEW SECRET ID
-                // 'client_secret': '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',
                 'redirect_uri': 'http://localhost:8080/Accounts',
 
-                // 'redirect_uri': 'https://app.wysely.in/Accounts',
-                // 'redirect_uri': 'https://wysely-a1dd8.firebaseapp.com/Accounts',
+               
                 'grant_type': 'authorization_code',
                 'access_type': 'offline',
             });
@@ -380,7 +371,6 @@ export default {
                 url: 'https://accounts.google.com/o/oauth2/token',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
-                    // 'Cookie': '__Host-GAPS=1:zZDjLwtttyilNYykECmVuNz8wzY9gA:-H2M7RvUIKhmjAMP'
                 },
                 data: dataX
             };
@@ -441,7 +431,6 @@ export default {
     },
     methods: {
         emailFetch() {
-            // var fetchedEmail = localStorage.getItem('localstroageemailfetch')
             this.gauthclientseassion = localStorage.clientsessionstore;
 
             let axiosthis = this

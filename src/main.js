@@ -4,7 +4,6 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import { initializeApp } from "firebase/app";
 
-// console.log("apikey",process.env, process.env.API_KEY)
 const firebaseConfig = {
   apiKey: process.env.VUE_APP_API_KEY,
   authDomain: "wysely-n.firebaseapp.com",
