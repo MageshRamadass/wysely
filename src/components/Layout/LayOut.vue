@@ -14,8 +14,6 @@ import SideMenubar from '../navdraw/SideMenubar.vue';
 
 export default {
     components: { SideMenubar },
-    mounted() {
 
-    }
 };
 </script>
