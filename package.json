@@ -25,9 +25,7 @@
     }
   },
   "dependencies": {
-    "@capacitor/android": "^4.1.0",
-    "@capacitor/cli": "^4.1.0",
-    "@capacitor/core": "^4.1.0",
+    "@sideway/formula": "^3.0.1",
     "axios": "^1.2.0",
     "chart.js": "^3.9.1",
     "core-js": "^3.8.3",
@@ -70,6 +68,7 @@
     "eslint-plugin-vue": "^8.0.3",
     "https-browserify": "^1.0.0",
     "jest": "^27.5.1",
+    "minimatch": "^3.0.5",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
     "react-app-rewired": "^2.2.1",
