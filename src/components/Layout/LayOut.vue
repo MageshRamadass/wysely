@@ -13,6 +13,7 @@
 import SideMenubar from '../navdraw/SideMenubar.vue';
 
 export default {
-    components: { SideMenubar }
+    components: { SideMenubar },
+
 };
 </script>
