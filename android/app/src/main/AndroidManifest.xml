@@ -3,6 +3,8 @@
     package="com.wysely.app">
 
     <application
+        android:fullBackupContent="@xml/backup.xml"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"

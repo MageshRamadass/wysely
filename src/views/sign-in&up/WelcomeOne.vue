@@ -227,7 +227,6 @@ export default {
       ],
       emailRules: [
         (v) => !!v || "Your E-mail is required",
-        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
       ],
       mobileRules: [
         (v) => !!v || "Your mobile number is required",

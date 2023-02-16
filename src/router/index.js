@@ -3,8 +3,7 @@ import VueRouter from 'vue-router'
 
 import WyselyView from '../views/sign-in&up/WyselyView.vue'
 import PrivacyPolice from '../views/sign-in&up/PrivacyPolice.vue'
-import TotpSignup from '../views/sign-in&up/TotpSignup.vue'
-import TotpGenerate from '../views/sign-in&up/TotpGenerate.vue'
+
 
 
 import TermsConditions from '../views/sign-in&up/TermsConditions.vue'
@@ -60,16 +59,7 @@ const routes = [
     name: 'terms and conditions',
     component: TermsConditions,
   },
-  {
-    path: '/totpsignup',
-    name: 'TotpSignup',
-    component: TotpSignup,
-  },
-  {
-    path: '/totpgenerate',
-    name: 'TotpGenerate',
-    component: TotpGenerate,
-  },
+ 
 
   {
     path: '/signin',

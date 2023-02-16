@@ -294,11 +294,7 @@ export default {
             ClientRules: [
                 v => !!v || 'Your Client ID is required',
             ],
-
-            emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-            ],
+            
             Broker: [
                 'ZEBU',
                 'Zerodha',
