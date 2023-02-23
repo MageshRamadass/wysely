@@ -202,18 +202,15 @@ export default {
   methods: {
     upcomingEvent() {
       let axiosThis = this
-      console.log("Upcomming running");
       let config = {
         method: 'get',
         url: `${apiurl}/upcoming`,
         headers: {}
       };
-      console.log("Upcomming", config);
 
       axios(config)
         .then(function (response) {
           axiosThis.upcomingEvents = response.data.data
-          console.log("Upcomming", (response.data.data));
         })
         .catch(function (error) {
           console.log(error);
@@ -230,7 +227,6 @@ export default {
         clientid: newarrarychange,
 
       });
-      console.log("data check", datas)
 
       let configs = {
         method: "post",
@@ -244,8 +240,6 @@ export default {
 
       axios(configs)
         .then(function (response) {
-          console.log("DDDDDDDD", response);
-          console.log(JSON.stringify(response.data));
           if (response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid.") {
             axiosThis.snackbar = true;
             setTimeout(function () {
@@ -254,7 +248,6 @@ export default {
             }, 2000);
           }
           axiosThis.CorporateActions = response.data;
-          console.log(axiosThis.CorporateActions, "jjj");
 
           if (response.data.msg == "No Data Found") {
             axiosThis.coractdata = false;
@@ -267,7 +260,6 @@ export default {
             axiosThis.coractloader = false;
             axiosThis.nocoractdata = false;
           }
-          console.log("CorporateActions", axiosThis.CorporateActions.length);
 
         })
         .catch(function (error) {
@@ -307,20 +299,16 @@ export default {
         }
 
         axiosThis.emailDatafetch = response.data.Data;
-        console.log("clientIds", response.data.msg)
-        console.log("491--2", response)
         if (response.data.msg == 'No Email Sync data available for User') {
           axiosThis.coractdata = false;
           axiosThis.coractloader = false;
           axiosThis.nocoractdata = true;
         }
         for (let d = 0; d < axiosThis.emailDatafetch.length; d++) {
-          let clientIds = axiosThis.emailDatafetch[d].clientID;
-          console.log("clientIds", clientIds, d)
+          // let clientIds = axiosThis.emailDatafetch[d].clientID;
           axiosThis.clientids.push(axiosThis.emailDatafetch[d].clientID);
         }
         axiosThis.cli = axiosThis.clientids[0]
-        console.log("client id check", axiosThis.cli);
         axiosThis.CorporateActionschange();
       }).catch(function (err) {
         console.log(err)

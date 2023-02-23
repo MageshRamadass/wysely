@@ -446,11 +446,9 @@ export default {
   mounted() {
     let decryptedsrtore = localStorage.decryptedstoredname;
     this.signusername = decryptedsrtore;
-    console.log("declocalstore mounted", this.signusername);
 
     let declocalsrore = localStorage.decryptedstoredData;
     this.signinemailname = declocalsrore;
-    console.log("declocalstore mounted", this.signinemailname);
   },
 
   watch: {

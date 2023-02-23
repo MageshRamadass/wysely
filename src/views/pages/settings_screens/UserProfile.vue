@@ -178,13 +178,9 @@ export default {
     let axiosThis = this;
     let decryptedsrtore = localStorage.decryptedstoredname;
     this.signusername = decryptedsrtore;
-    console.log("declocalstore mounted", this.signusername);
-
     let declocalsrore = localStorage.decryptedstoredData;
     this.signinemailname = declocalsrore;
-    console.log("declocalstore mounted", this.signinemailname);
     let userprofileseasion = localStorage.clientsessionstore
-    console.log("userprofileseasion",userprofileseasion);
     let data = JSON.stringify({
       email: this.signinemailname,
     });
@@ -198,15 +194,9 @@ export default {
       },
       data: data,
     };
-    console.log("config seasion check",config);
 
     axios(config)
       .then(function (response) {
-       
-        console.log("user profile response",response);
-       
-        console.log("response getuser detailes",response.data.msg);
-          
        
     if(response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid."){
           axiosThis.snackbar = true;
@@ -220,7 +210,6 @@ export default {
         }
     
         axiosThis.UserDetails = axiosThis.getUserDetails[0];
-        console.log(axiosThis.UserDetails, "UserDetails");
          }
 
       })

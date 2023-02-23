@@ -138,13 +138,12 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$hostname)
+    // console.log(this.$hostname)
   },
   methods: {
     validatesnd() {
       if (this.$refs.formsnd.validate()) {
         let welcometwoclisesion = localStorage.clientsessionstore
-        console.log("welcomeone local cilent session", welcometwoclisesion);
         let axiosthis = this;
         let datasd = JSON.stringify({
           "userStatus": "Page2",
@@ -155,7 +154,6 @@ export default {
           "AnnualExpenses": this.expense,
           "AnnualSupReq": this.intent,
         });
-        console.log("saveuser details", datasd);
         let config = {
           method: 'post',
           url: `${apiurl}/saveuserdetails`,
@@ -165,11 +163,8 @@ export default {
           },
           data: datasd
         };
-        console.log("welcome page two header check", config);
         axios(config)
           .then(function (response) {
-            console.log("welcome page 2 ", response);
-            console.log("welcome page 2 status ", response.data.data);
 
             if (response.data.data == "Page 2 Details Added") {
               axiosthis.$router.push("/preferencecompleted")

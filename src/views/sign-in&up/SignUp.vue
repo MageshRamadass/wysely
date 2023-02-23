@@ -18,7 +18,10 @@
           ">
           <p class="title pb-6">Sign in your account using with Google</p>
           <v-btn @click="googleSignIn" block large class="btn white rounded-lg"><img class="pa-2"
-              src="@/assets/google.svg" alt="googlelogo" /><span><b>Sign in with Google</b></span></v-btn><br />
+              src="@/assets/google.svg" alt="googlelogo" /><span><b>Sign in with Google</b>
+
+              </span></v-btn><br />
+
           <v-btn @click="facebookSignIn" block large class="btn white mb-12 rounded-lg"><img class="pa-2"
               src="@/assets/facebook.svg" alt="facebooklogo" /><span><b>Sign in with Facebook</b></span></v-btn>
           <p style="color: #858b95" class="mt-8">
@@ -42,7 +45,6 @@ import axios from "axios";
 import Vue from "vue";
 import VueCryptojs from "vue-cryptojs";
 
-
 Vue.use(VueCryptojs);
 import {
   getAuth,
@@ -61,19 +63,21 @@ export default {
       secret: "12345678",
     };
   },
+
   methods: {
+
     getTokenDetials() {
+     
       let data = '';
       let config = {
         method: 'post',
         url: `${apiurl}/getToken`,
-        headers: {},
+        headers: { },
         data: data
       };
 
       axios(config)
         .then(function (response) {
-          console.log("getTokendata", response.data.Token)
           localStorage.setItem(
             "getTokendata",
             response.data.Token
@@ -104,14 +108,12 @@ export default {
       axios(config)
         .then(function (response) {
           axiosthis.emailDatafetch = response.data.Data;
-          console.warn("&&&", axiosthis.emailDatafetch[0].clientID);
 
           localStorage.setItem(
             "client-id",
             axiosthis.emailDatafetch[0].clientID
           );
        
-          console.log("dspemailaccount", axiosthis.dspemailaccount);
         })
         .catch(function (error) {
           console.log(error);
@@ -123,7 +125,6 @@ export default {
       provider.addScope("profile");
       provider.addScope("email");
       // provider.addCredentialHelper('firebaseui.auth.CredentialHelper.GOOGLE_YOLO')
-      // console.log("provider",provider)
 
       provider.setCustomParameters({
         // 'credentialHelper': "firebaseui.auth.CredentialHelper.GOOGLE_YOLO",
@@ -131,7 +132,6 @@ export default {
       });
       signInWithPopup(getAuth(), provider)
         .then((result) => {
-          console.log("Logged In", result);
           this.google = true;
           this.getTokenDetials();
           let axiosthis = this;
@@ -142,53 +142,38 @@ export default {
             Provider: result.providerId,
             SessionId: result.user.accessToken,
           });
-          console.log("result acess token", data);
           //signinuserename encrept&decryted start
           let encryptedsignname = this.$CryptoJS.AES.encrypt(
             result._tokenResponse.fullName,
             "Secret Passphrase"
           ).toString();
-          console.log("encryptedText", encryptedsignname);
           localStorage.storedData = encryptedsignname;
-          console.log("encript local stroage", localStorage.storedData);
           let localStoragestorename = localStorage.storedData;
           let decryptedname = this.$CryptoJS.AES.decrypt(
             localStoragestorename,
             "Secret Passphrase"
           ).toString(this.$CryptoJS.enc.Utf8);
-          console.log("decrypted store value", decryptedname);
           localStorage.decryptedstoredname = decryptedname;
-          console.log(
-            "decrypted local stroage store value",
-            localStorage.decryptedstoredname
-          );
+         
           // signinusername  end
           // signinuseremailid encrept&decryted start
           let encryptedText = this.$CryptoJS.AES.encrypt(
             result._tokenResponse.email,
             "Secret Passphrase"
           ).toString();
-          console.log("encryptedText", encryptedText);
           localStorage.storedData = encryptedText;
-          console.log("encript local stroage", localStorage.storedData);
           let localStoragestore = localStorage.storedData;
           let decryptedText = this.$CryptoJS.AES.decrypt(
             localStoragestore,
             "Secret Passphrase"
           ).toString(this.$CryptoJS.enc.Utf8);
-          console.log("decrypted store value", decryptedText);
           localStorage.decryptedstoredData = decryptedText;
-          console.log(
-            "decrypted local stroage store value",
-            localStorage.decryptedstoredData
-          );
+         
           // signinuseremail id end
 
           //  global variable declare signin usename&emailid
           (Vue.prototype.$hostname = result._tokenResponse.email);
-            console.log("globalvariablename", this.$hostname);
           (Vue.prototype.$signinusername = result._tokenResponse.fullName);
-            console.log("signin user fullname", this.$signinusername);
           // global variable end
           let config = {
             method: "post",
@@ -199,18 +184,12 @@ export default {
             },
             data: data,
           };
-          console.log("check header value", config);
           axios(config)
             .then(function (response) {
-              console.log("response value change", response.data);
-              console.log("client seassion", response.data.clientsession);
               localStorage.clientsessionstore = response.data.clientsession;
               axiosthis.checkClientSync(result._tokenResponse.email);
 
-              console.log(
-                "localStorage clientsession",
-                localStorage.clientsessionstore
-              );
+              
             })
             .catch(function (error) {
               console.log(error);
@@ -219,9 +198,7 @@ export default {
           let datas = JSON.stringify({
             Email: result._tokenResponse.email,
           });
-          console.log("datas", datas);
           let localstroageget = localStorage.clientsessionstore;
-          console.log("localstroage get value", localstroageget);
           let configs = {
             method: "post",
             url: `${apiurl}/getuserdetailstatus`,
@@ -232,10 +209,8 @@ export default {
             data: datas,
           };
 
-          console.log("header get local stroage value", configs);
           axios(configs)
             .then(function (response) {
-              console.log("get user detail status response", response);
 
               if ((response.data.userstatus == "Page2") || (response.data.userstatus == "User Already Available")) {
                 if (axiosthis.emailDatafetch) {
@@ -270,7 +245,6 @@ export default {
         prompt: "select_account",
       });
       signInWithPopup(getAuth(), provider).then((result) => {
-        console.log("Logged In ", result);
         this.facebook = true;
         // this.$router.push('landing')
         this.checkClientSync(result._tokenResponse.email);
@@ -281,45 +255,31 @@ export default {
           IdToken: result._tokenResponse.idToken,
           SessionId: result.user.accessToken,
         });
-        console.log("result acess token", data);
         let encryptedsignname = this.$CryptoJS.AES.encrypt(
           result._tokenResponse.fullName,
           "Secret Passphrase"
         ).toString();
-        console.log("encryptedText", encryptedsignname);
         localStorage.storedData = encryptedsignname;
-        console.log("encript local stroage", localStorage.storedData);
         let localStoragestorename = localStorage.storedData;
         let decryptedname = this.$CryptoJS.AES.decrypt(
           localStoragestorename,
           "Secret Passphrase"
         ).toString(this.$CryptoJS.enc.Utf8);
-        console.log("decrypted store value", decryptedname);
         localStorage.decryptedstoredname = decryptedname;
-        console.log(
-          "decrypted local stroage store value",
-          localStorage.decryptedstoredname
-        );
         // signinusername  end
         // signinuseremailid encrept&decryted start
         let encryptedText = this.$CryptoJS.AES.encrypt(
           result._tokenResponse.email,
           "Secret Passphrase"
         ).toString();
-        console.log("encryptedText", encryptedText);
         localStorage.storedData = encryptedText;
-        console.log("encript local stroage", localStorage.storedData);
         let localStoragestore = localStorage.storedData;
         let decryptedText = this.$CryptoJS.AES.decrypt(
           localStoragestore,
           "Secret Passphrase"
         ).toString(this.$CryptoJS.enc.Utf8);
-        console.log("decrypted store value", decryptedText);
         localStorage.decryptedstoredData = decryptedText;
-        console.log(
-          "decrypted local stroage store value",
-          localStorage.decryptedstoredData
-        );
+       
         // signinuseremail id end
 
         //  global variable declare signin usename&emailid
@@ -332,17 +292,9 @@ export default {
           },
           data: data,
         };
-        console.log("check header value", config);
         axios(config)
           .then(function (response) {
-            console.log("Facebook signin response", response);
-            console.log("Facebook signin response.data", response.data);
-            console.log("client seassion", response.data.clientsession);
             localStorage.clientsessionstore = response.data.clientsession;
-            console.log(
-              "localStorage clientsession",
-              localStorage.clientsessionstore
-            );
           })
           .catch(function (error) {
             console.log(error);
@@ -353,10 +305,7 @@ export default {
           Email: result._tokenResponse.email,
         });
 
-
-        console.log("fb getuser email", datas);
         let localstroageget = localStorage.clientsessionstore;
-        console.log("localstroage get value", localstroageget);
         let configs = {
           method: "post",
           url: `${apiurl}/getuserdetailstatus`,
@@ -367,11 +316,8 @@ export default {
           data: datas,
         };
 
-        console.log("header get local stroage value", configs);
         axios(configs)
           .then(function (response) {
-            console.log("get user detail status response", response);
-           
             if (response.data.userstatus == "Page1") {
               axiosthis.$router.push("/preferencetwo");
             }

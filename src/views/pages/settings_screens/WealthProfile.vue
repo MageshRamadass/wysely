@@ -88,13 +88,10 @@ export default {
     let axiosThis = this;
     let decryptedsrtore = localStorage.decryptedstoredname;
     this.signusername = decryptedsrtore;
-    console.log("declocalstore mounted", this.signusername);
 
     let declocalsrore = localStorage.decryptedstoredData;
     this.signinemailname = declocalsrore;
-    console.log("declocalstore mounted", this.signinemailname);
     let wealthprofileseasion = localStorage.clientsessionstore
-console.log("wealth profile seasion",wealthprofileseasion);
     let data = JSON.stringify({
       email: this.signinemailname,
     });
@@ -111,8 +108,6 @@ console.log("wealth profile seasion",wealthprofileseasion);
 
     axios(config)
       .then(function (response) {
-        console.log("response wealth profile",response);
-        console.log(JSON.stringify(response.data));
         if (response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid.") {
             axiosThis.snackbar = true;
             setTimeout(function () {
@@ -125,28 +120,20 @@ console.log("wealth profile seasion",wealthprofileseasion);
           // }
         for (const element of response.data) {
           axiosThis.getUserDetails.push(element);
-          console.log("getuser detailes", axiosThis.getUserDetails);
         }
         axiosThis.UserDetails = axiosThis.getUserDetails[0];
-        console.log(axiosThis.UserDetails, "UserDetails");
         axiosThis.goals = axiosThis.UserDetails.goals;
         axiosThis.goalchange.push(axiosThis.goals)
-        console.log("user change value", axiosThis.goalchange);
         let d = []
-        console.log("axiosthis goal changes",axiosThis.goalchange);
         let sa = axiosThis.goals.replace(/[*]+/g, 'C')
         let sd = sa.replace(/[[]+/g, '')
         // eslint-disable-next-line 
         let ss = sd.replace(/]+/g, '')
-     
-
 
         let sdd = ss.replace(/'+/g, '')
 
         d = sdd.split(",")
         axiosThis.chip = d
-        console.log("userdetails get change", d);
-        console.log("goal change", axiosThis.goalschange);
       }
       })
       .catch(function (error) {
