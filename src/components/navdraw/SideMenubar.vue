@@ -101,6 +101,12 @@
                   >
                 </v-list-item>
 
+                <v-list-item class="pl-8" link to="/hpr">
+                  <v-list-item-title class="lstctntit"
+                    >HPR</v-list-item-title
+                  >
+                </v-list-item>
+
                 <v-list-item class="pl-8" link to="/Corporate_actions">
                   <v-list-item-title class="lstctntit"
                     >Corporate Actions</v-list-item-title
@@ -281,6 +287,12 @@
                 <v-list-item class="pl-8" link to="/Holding">
                   <v-list-item-title class="lstctntit"
                     >Holdings</v-list-item-title
+                  >
+                </v-list-item>
+
+                <v-list-item class="pl-8" link to="/hpr">
+                  <v-list-item-title class="lstctntit"
+                    >HPR</v-list-item-title
                   >
                 </v-list-item>
 

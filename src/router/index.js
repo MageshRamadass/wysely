@@ -18,6 +18,7 @@ import LayOut from '../components/Layout/LayOut.vue'
 
 import DashBoard from '../views/pages/DashBoard.vue'
 
+import HprReport from '../views/pages/portfolio_screens/HprReport.vue'
 import HolDings from '../views/pages/portfolio_screens/HolDings.vue'
 import NewHolding from '../views/pages/portfolio_screens/newHolding.vue'
 
@@ -102,6 +103,11 @@ const routes = [
         path: '/Holding',
         name: 'Holding',
         component: HolDings,
+      },
+      {
+        path: '/hpr',
+        name: 'hpr',
+        component: HprReport,
       },
       {
         path: '/newholding',
