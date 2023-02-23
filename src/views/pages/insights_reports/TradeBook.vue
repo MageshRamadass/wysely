@@ -287,8 +287,6 @@ export default {
       let axiosThis = this;
       axios(config)
         .then(function (response) {
-          console.log("&&&e", response);
-
           if (response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid.") {
             axiosThis.snackbar = true;
             setTimeout(function () {
@@ -302,12 +300,48 @@ export default {
             axiosThis.usernodata = true;
           }
           for (const element of axiosThis.emailDatafetch) {
-            let clientIds = element.clientID;
-            console.log("clientIds", clientIds)
+            // let clientIds = element.clientID;
             axiosThis.clientids.push(element.clientID);
           }
           axiosThis.clientidsindex = axiosThis.clientids[0]
           axiosThis.selecttrade();
+          axiosThis.selecttradedetails();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    selecttradedetails() {
+      this.tradedetailsloader = true;
+      this.tradedetails = [];
+      let ids;
+      if (this.clientidsindex == 'All') {
+        ids = this.clientids.filter(function (e) { return e !== 'All' })
+      } else {
+        ids = [this.clientidsindex]
+      }
+      let data = JSON.stringify({
+        "clientid": ids
+      });
+      var config = {
+        method: "post",
+        url: `${apiurl}/alltradedata`,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: data,
+      };
+      let axiosThis = this;
+      axios(config)
+        .then(function (response) {
+          axiosThis.tradedetails = response.data.data_datawise
+          if (response.data.total_data_datawise > 0) {
+            axiosThis.tradedetailsloader = false;
+          } else if (response.data.msg == "No Data Available") {
+            axiosThis.usernodata = true;
+            axiosThis.tradedetailsloader = false;
+            axiosThis.usertotaldata = false;
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -316,7 +350,6 @@ export default {
     selecttrade() {
       this.coractdata = false;
       this.coractloader = true;
-
       let ids;
       if (this.clientidsindex == 'All') {
         ids = this.clientids.filter(function(e) { return e !== 'All' })
@@ -329,8 +362,7 @@ export default {
 
       let config = {
         method: "post",
-        // url: `${apiurl}/tradebook`,
-        url: `http://192.168.5.94:5500/alltradebook`,
+        url: `${apiurl}/alltradebook`,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -339,7 +371,6 @@ export default {
 
       let axiosThis = this;
       axios(config).then(function (response) {
-        console.log("tradebook ", response.data)
         axiosThis.colormis = response.data.color_val
         axiosThis.database = response.data.trades;
 
@@ -349,8 +380,6 @@ export default {
           allyear.push((new Date(element.dates)).getFullYear());
         }
         let newyears = [...new Set(allyear)]
-
-        console.log("asadfgdfg", newyears )
         let modeyyear = []
         modeyyear.push({ "dateselect": newyears.filter(Boolean) })
         for (const element of modeyyear) {
@@ -359,13 +388,10 @@ export default {
             axiosThis.years.push(yearmodel[n])
           }
         }
-        console.log("loop:", axiosThis.database, axiosThis.data, modeyyear)
         let enmes = (axiosThis.data.slice(-1)).join()
         let yearend = axiosThis.data[0].toString()
-        console.log(yearend, typeof (yearend), yearend, axiosThis.years[0], typeof (enmes))
         let newyear = new Date((new Date(enmes)).getFullYear(), 0, 1);
         let endyear = new Date((new Date(yearend)).getFullYear(), 11, 31);
-        console.log("date", newyear, endyear)
         axiosThis.startDate = (new Date(newyear).getFullYear()) + '-' + (1 + new Date(newyear).getMonth()) + '-' + (new Date(newyear).getDate());
         axiosThis.endDates = (new Date(endyear).getFullYear()) + '-' + (1 + new Date(endyear).getMonth()) + '-' + (new Date(endyear).getDate());
         axiosThis.dateselect = axiosThis.years[0]
@@ -374,14 +400,9 @@ export default {
     },
     getcalendar() {
       let monthdate = this.dateRange(this.startDate, this.endDates);
-      console.log('end year', this.startDate, this.endDates,)
-      let newdate = [];
-      console.log(this.monthname)
       for (const element of monthdate) {
         this.database.push({ "counts": 0, "dates": element })
       }
-      console.log("newdays", this.database)
-      console.log("newdays", newdate)
       let nextval = this.database.filter((element) => new Date(element.dates).getFullYear() == this.dateselect)
 
       let removedups = Object.values(nextval.reduce((object, item) => {
@@ -394,18 +415,15 @@ export default {
         return object;
       }, {})
       );
-      console.log(removedups, typeof(removedups))
      
 
       let newdayft = [...removedups].sort((a, b) =>{ return new Date(a.dates) - new Date(b.dates) });
-      // console.log("adfasdf",newdayft)
       let months = []
 
       for (const element of newdayft) {
         months.push({ "date": new Date(element.dates).toLocaleDateString("en-us", { month: "short", }) })
         this.monthname = months.filter((v, i, a) => a.findIndex(v2 => (v2.date === v.date)) === i)
       }
-      console.log("ft", newdayft)
       let ref = {};
       let res = newdayft.reduce(function (arr1, o) {
         let m = new Date(o.dates).getMonth();
@@ -416,7 +434,6 @@ export default {
         arr1[ref[m]].push(o);
         return arr1;
       }, []);
-      console.log("res", res)
 
       this.values = (res)
       if (this.values.length > 0) {

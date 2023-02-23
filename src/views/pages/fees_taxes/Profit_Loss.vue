@@ -43,6 +43,107 @@
         </v-row>
 
         <div>
+          <v-card class="pa-4 elevation-0 rounded-lg" outlined>
+            <div v-if="coractloader" class="py-10 px-16">
+              <p class="pa-16 pb-0 text-center">Getting your Profit & Loss</p>
+              <v-card width="200px" class="elevation-0 mx-auto">
+                <v-progress-linear class="mb-12" color="primary" indeterminate rounded height="6"></v-progress-linear>
+              </v-card>
+            </div>
+            <div v-if="coractdata">
+              <v-col class="d-flex pt-0" cols="12">
+                <v-select dense :items="years" v-model="dateselect" flat item-value="dateselect" label="years"
+                  type="number" hide-details @change="getcalendar">
+                </v-select>
+              </v-col>
+              <v-row no-gutters>
+                <v-col v-for="months in monthname" :key="months" class="p-0 m-0 d-flex justify-center">
+                  {{ months.date }}
+                </v-col>
+              </v-row>
+              <v-row no-gutters>
+                <v-col v-for="indata in values" :key="indata" class="pa-0 ma-0">
+                  <div v-for="n in indata" :key="n" outlined class="pa-0 ma-0">
+                    <v-tooltip top>
+                      <template v-slot:activator="{ on, attrs }">
+                        <div v-bind="attrs" v-on="on">
+                          <div v-if="n.values > 0">
+                            <v-card width="4px" class="colums" color="#34A8539a" style="margin: 2px; padding: 6px"
+                              outlined tile>
+                            </v-card>
+                          </div>
+                          <div v-else-if="n.values < 0">
+                            <v-card width="4px" class="colums" color="#e126269a" style="margin: 2px; padding: 6px"
+                              outlined tile>
+                            </v-card>
+                          </div>
+                          <div v-else>
+                            <v-card width="4px" color="#E8EBED" class="colums" style="margin: 2px; padding: 6px"
+                              outlined tile>
+                            </v-card>
+                          </div>
+                        </div>
+                      </template>
+                      <div v-if="n.values > 0">
+                        <p class="mb-0 white--text">
+                          <span class="font-weight-bold">{{ n.values }} ₹ Profit </span>on
+                          {{
+                            new Date(n.dates).toLocaleDateString("en-us", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
+                          }}
+                        </p>
+                      </div>
+                      <div v-else-if="n.values < 0">
+                        <p class="mb-0 white--text">
+                          <span class="font-weight-bold">{{ n.values }} ₹ Loss </span>on
+                          {{
+                            new Date(n.dates).toLocaleDateString("en-us", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
+                          }}
+                        </p>
+                      </div>
+                      <div v-else>
+                        <p class="mb-0 white--text">
+                          <span class="font-weight-bold">No trade occur</span> on
+                          {{
+                            new Date(n.dates).toLocaleDateString("en-us", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
+                          }}
+                        </p>
+                      </div>
+                    </v-tooltip>
+                  </div>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="9">
+                </v-col>
+                <v-col cols="3">
+                  <p class="colums">Loss</p>
+                  <v-card v-bind="attrs" v-on="on" width="4px" class="colums" color="#e126269a"
+                    style="margin: 2px; padding: 6px" outlined tile>
+                  </v-card>
+                  <v-card v-bind="attrs" v-on="on" width="4px" class="colums" color="#34A8539a"
+                    style="margin: 2px; padding: 6px" outlined tile>
+                  </v-card>
+                  <p>Profit</p>
+                </v-col>
+              </v-row>
+            </div>
+
+            <div v-if="nocoractdata" class="py-10">
+              <p class="pa-16 text-center">No Profit & Loss found</p>
+            </div>
+          </v-card>
         </div>
 
         <div class="mt-6">
@@ -403,22 +504,16 @@ export default {
       sumpageCount: 0,
       page: 1,
       pageCount: 0,
-
       clientidsindex: "",
       pnltab: null,
       usertotaldata: true,
       usernodata: false,
-
       summaryloader: true,
       daywiseloader: true,
-
       clientids: [
         'All'
       ],
       emailDatafetch: [],
-
-      none: '',
-
       newPnL: [],
       PnLSummary: [],
       PnLdaywise: [],
@@ -428,6 +523,18 @@ export default {
       total_summary: 0,
       DW_qty: 0,
       Summ_qty: 0,
+      datesummary: [],
+      startDate: '',
+      endDates: '',
+      monthname: [],
+      coractdata: false,
+      nocoractdata: false,
+      coractloader: true,
+      values: [],
+      dateselect: '',
+      years: [],
+      fromdate: "",
+      todate: "",
     };
   },
 
@@ -451,8 +558,6 @@ export default {
       let axiosThis = this;
       axios(config)
         .then(function (response) {
-          console.log("&&&e", response);
-
           if (response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid.") {
             axiosThis.snackbar = true;
             setTimeout(function () {
@@ -479,6 +584,7 @@ export default {
     },
 
     dateWise() {
+      this.calanderapi();
       this.PnLSummary = [];
       this.PnLdaywise = [];
       this.tol_DW_mtm = 0;
@@ -501,15 +607,13 @@ export default {
         method: 'post',
         url: `https://api.wysely.in/allpnl`,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         data: data
       };
       let axiosThis = this;
-      console.log("new pnl", data)
       axios(config)
         .then(function (response) {
-          console.log("new pnl", response.data);
           axiosThis.newPnL = response.data;
           axiosThis.DW_qty = response.data.DW_qty;
           axiosThis.Summ_qty = response.data.Summ_qty;
@@ -534,7 +638,141 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
-    }
+    },
+    dateRange(startDate, endDate, steps = 1) {
+      const dateArray = [];
+      let currentDate = new Date(startDate);
+      while (currentDate <= new Date(endDate)) {
+        dateArray.push(new Date(currentDate).toLocaleDateString("en-CA"));
+        currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+      }
+      return dateArray;
+    },
+    changeLanguage() {
+      this.yearsvalues = this.dateselect
+      console.log("new year click", this.dateselect)
+    },
+    calanderapi() {
+      this.coractdata = false;
+      this.coractloader = true;
+      let gauthclientseassion = localStorage.clientsessionstore;
+      this.monthname = [];
+      this.values = [];
+      this.datesummary = [];
+      this.dateselect = '';
+      this.years = [];
+      this.fromdate = "";
+      this.todate = "";
+      let ids;
+      if (this.clientidsindex == 'All') {
+        ids = this.clientids.filter(function (e) { return e !== 'All' })
+      } else {
+        ids = [this.clientidsindex]
+      }
+      let data = JSON.stringify({
+        "clientid": ids
+      });
+      let config = {
+        method: "post",
+        url: `${apiurl}/allpnlbook`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: gauthclientseassion,
+
+        },
+        data: data,
+      };
+      let axiosThis = this;
+      axios(config)
+        .then(function (response) {
+          axiosThis.datesummary = response.data.summary;
+          if (response.data.msg == "No Data Available") {
+            axiosThis.coractdata = false;
+            axiosThis.nocoractdata = true;
+            axiosThis.coractloader = false;
+          }
+          var allyear = [];
+          for (const element of axiosThis.datesummary) {
+            allyear.push((new Date(element.dates)).getFullYear());
+          }
+          let allyeardup = [...new Set(allyear)]
+          // console.log("allyear", allyeardup)
+          var yearselect = [];
+          yearselect.push({ "dateselect": allyeardup })
+          for (const element of yearselect) {
+            var mm = element.dateselect
+            // axiosThis.years.push(yearselect[o].dateselect)
+            for (let p in mm) {
+              axiosThis.years.push(mm[p])
+            }
+          }
+          let enmes = (allyeardup.slice(-1)).join()
+          let yearend = allyeardup[0].toString()
+          let newyear = new Date((new Date(enmes)).getFullYear(), 0, 1);
+          let endyear = new Date((new Date(yearend)).getFullYear(), 11, 31);
+          axiosThis.startDate = (new Date(newyear).getFullYear()) + '-' + (1 + new Date(newyear).getMonth()) + '-' + (new Date(newyear).getDate());
+          axiosThis.endDates = (new Date(endyear).getFullYear()) + '-' + (1 + new Date(endyear).getMonth()) + '-' + (new Date(endyear).getDate());
+          axiosThis.fromdate = new Date(axiosThis.startDate).toLocaleDateString(
+            "en-us",
+            { year: "numeric", month: "short", day: "numeric" }
+          );
+          axiosThis.todate = new Date(axiosThis.endDates).toLocaleDateString("en-us", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+          axiosThis.dateselect = axiosThis.years[0]
+          axiosThis.getcalendar()
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    getcalendar() {
+      this.coractdata = false;
+      this.coractloader = true;
+      let monthdate = this.dateRange(this.startDate, this.endDates);
+      console.log('end year', this.startDate, this.endDates,)
+      console.log(this.datesummary)
+      for (const element of monthdate) {
+        this.datesummary.push({ "values": 0, "dates": element })
+      }
+      let val = this.datesummary.sort(function (a, b) { return new Date(a.date) - new Date(b.date) })
+      let nextval = val.filter((element) => new Date(element.dates).getFullYear() == this.dateselect)
+      let removedups = Object.values(nextval.reduce((object, item) => {
+        let key = item.dates;
+        if (!object[key]) {
+          object[key] = Object.assign(item);
+        } else {
+          object[key].values += Object.assign(item.values);
+        }
+        return object;
+      }, {})
+      );
+      let newdayft = removedups.sort(function (c, d) { return new Date(c.dates) - new Date(d.dates) })
+      let months = []
+      for (const element of newdayft) {
+        months.push({ "date": new Date(element.dates).toLocaleDateString("en-us", { month: "short", }) })
+        this.monthname = months.filter((v, i, a) => a.findIndex(v2 => (v2.date === v.date)) === i)
+      }
+      console.log("ft", newdayft)
+      let ref = {};
+      let res = newdayft.reduce(function (arr1, o) {
+        let m = new Date(o.dates).getMonth();
+        if (!(m in ref)) {
+          ref[m] = arr1.length;
+          arr1.push([]);
+        }
+        arr1[ref[m]].push(o);
+        return arr1;
+      }, []);
+      this.values = (res)
+      if (this.values.length > 0) {
+        this.coractdata = true;
+        this.coractloader = false;
+        this.nocoractdata = false;
+      }
+    },
   },
 
   mounted() {
@@ -596,5 +834,9 @@ export default {
 
 .datedetailshead .v-data-table-header__sort-badge {
   display: none !important;
+}
+.colums {
+  position: static;
+  float: left;
 }
 </style>

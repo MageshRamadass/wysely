@@ -17,13 +17,10 @@ initializeApp(firebaseConfig);
 Vue.config.productionTip = false
 
 new Vue({
-   created: function() {
-    console.log('apikey2',process.env.development.VUE_APP_API_KEY)
+   created: function() { 
   },
   
- mounted(){
-  console.log('apikey3',process.env.development.VUE_APP_API_KEY)
-  },
+ 
 
 
     

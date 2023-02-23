@@ -785,7 +785,6 @@ export default {
       let axiosThis = this;
       axios(config)
         .then(function (response) {
-          console.log("&&&e", response);
 
           if (response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid.") {
             axiosThis.snackbar = true;
@@ -800,8 +799,7 @@ export default {
             axiosThis.usernodata = true;
           }
           for (const element of axiosThis.emailDatafetch) {
-            let clientIds = element.clientID;
-            console.log("clientIds", clientIds)
+            // let clientIds = element.clientID;
             axiosThis.clientids.push(element.clientID);
           }
           axiosThis.clientidsindex = axiosThis.clientids[0]
@@ -843,7 +841,6 @@ export default {
 
       axios(config)
         .then(function (response) {
-          console.log("new holdings", response.data);
           axiosThis.newhold = response.data.holdings;
           axiosThis.tol_buyvalue = response.data.tol_buyvalue;
           axiosThis.tol_pnl = response.data.tol_pnl;
@@ -855,7 +852,6 @@ export default {
           if (axiosThis.total_Summary > 0) {
             axiosThis.printsumgetloader = false;
             axiosThis.$refs.Btn.click()
-            console.log('buttonnn run Click', axiosThis.$refs.ovrtable.$vnode.componentInstance.openCache)
 
           } else if (response.data.msg == 'No Data Available') {
             axiosThis.printsumgetloader = false;

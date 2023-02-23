@@ -42,7 +42,7 @@
                                             Start tracking by sync your email here</p>
                                         <p class="text-center pt-14">
                                    
-                                                    <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/gmail.readonly&access_type=offline&redirect_uri=http://localhost:8080/Accounts&response_type=code&client_id=841602117530-fflcske9v6nltk6spfj4gramgbsmhn0l.apps.googleusercontent.com">
+                                                    <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/gmail.readonly&access_type=offline&redirect_uri=https://app.wysely.in/Accounts&response_type=code&client_id=841602117530-fflcske9v6nltk6spfj4gramgbsmhn0l.apps.googleusercontent.com">
                                                 <img class=" rounded-lg" 
                                                     src="@/assets/googleimage.png" width="65%" alt="googleimage-logo" ></a>
                                                 
@@ -294,11 +294,7 @@ export default {
             ClientRules: [
                 v => !!v || 'Your Client ID is required',
             ],
-
-            emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-            ],
+            
             Broker: [
                 'ZEBU',
                 'Zerodha',
@@ -325,21 +321,16 @@ export default {
     mounted() {
         let access_tokenlocalstr = localStorage.aceesTokenstore
         this.res = access_tokenlocalstr
-        console.log("acces_token loc variable store", this.res)
 
 
         let errormeassgwtoken = localStorage.refreshTokenalredygen
-        console.log("refreshtoken already generatede", errormeassgwtoken)
         this.errMsg = errormeassgwtoken
-        console.log("undefinded...........", this.errMsg)
 
         let decryptedsrtore = localStorage.decryptedstoredname
         this.signusername = decryptedsrtore
-        console.log("declocalstore mounted", this.signusername)
 
         let declocalsrore = localStorage.decryptedstoredData
         this.signinemailname = declocalsrore
-        console.log("declocalstore mounted", this.signinemailname)
     },
     created() {
         this.gauthclientseassion = localStorage.clientsessionstore;
@@ -349,41 +340,33 @@ export default {
         this.loginEmail = localStorage.getItem('decryptedstoredData')
    
         this.emailFetch()
-
-        
-        console.log("decoded", cOde)
         if (cOde) {
             let dataX = qs.stringify({
                 'code': cOde,
                 'client_id': '841602117530-fflcske9v6nltk6spfj4gramgbsmhn0l.apps.googleusercontent.com', // NEW CLIENT ID
 
                 'client_secret': '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', // NEW SECRET ID
-                'redirect_uri': 'http://localhost:8080/Accounts',
+                'redirect_uri': 'https://app.wysely.in/Accounts',
 
                
                 'grant_type': 'authorization_code',
                 'access_type': 'offline',
             });
-            console.log("data user mail id", dataX)
             const axiosthis = this;
             const config = {
                 method: 'post',
                 url: 'https://accounts.google.com/o/oauth2/token',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 data: dataX
             };
-            console.log("da", dataX)
-            console.log("CONF", config)
             axios(config)
                 .then(function (response) {
-                    console.log("response value", response);
 
                     if (response.data.refresh_token == undefined) {
                         axiosthis.errMsg = "Refresh token already generated"
                         alert("Refresh token already generated")
-                        console.log("err meassge", axiosthis.errMsg);
                     }
                     else {
                         axiosthis.errMsg = ""
@@ -391,10 +374,7 @@ export default {
                     axiosthis.$router.replace("/Accounts")
                     axiosthis.refreshToken = response.data.refresh_token
                     axiosthis.res = response.data.access_token
-                    console.log("acces token meassage", axiosthis.res);
                     axiosthis.res_ref = response.data.refresh_token
-                    console.log("res-ref message", axiosthis.res_ref);
-                    console.log('axiosthis.res', axiosthis.res)
 
                     let configx = {
                         method: 'get',
@@ -406,17 +386,13 @@ export default {
 
                     axios(configx)
                         .then(function (response) {
-                            console.log(JSON.stringify(response.data));
                             axiosthis.useremaild = response.data.emailAddress
                             localStorage.setItem('localstroageemailfetch', response.data.emailAddress)
-                            console.log("local stroage set item", localStorage.localstroageemailfetch);
                             if (response.data.emailAddress) {
-                                console.table('asd')
                                 axiosthis.emailfetchdialog = true;
                                 axiosthis.emaildatadialog = false;
                                 axiosthis.accountdatadialog = true;
                             }
-                            console.log("accestok==============", axiosthis.useremaild, axiosthis.res, axiosthis.res_ref);
 
 
                         })
@@ -450,7 +426,6 @@ export default {
 
             axios(config)
                 .then(function (response) {
-                    console.warn("&&&", response)
 
 
                     if(response.data.msg == "Token is Expired." || response.data.msg == "Token is Invalid."){
@@ -470,7 +445,6 @@ export default {
                     if (axiosthis.dspemailaccount.length >= 5) {
                         axiosthis.btnaddacc = true;
                     }
-                    console.log("dspemailaccount", axiosthis.dspemailaccount);
 
                 })
                 .catch(function (error) {
@@ -479,10 +453,8 @@ export default {
         },
         addAccount() {
             let axiosthis = this
-            console.log("out of addaccount if")
 
             if (this.res_ref) {
-                console.log("inside addaccounrt if")
 
                 let data = JSON.stringify({
                     "login_Email": this.loginEmail,
@@ -498,7 +470,6 @@ export default {
                     "Contract_Note_Pass": this.password
                 });
 
-                console.log("emailacees referesh", data)
                 this.gauthclientseassion = localStorage.clientsessionstore
 
                 let config = {
@@ -510,11 +481,8 @@ export default {
                     },
                     data: data
                 };
-                console.log("saveartoken clientseassion", config)
                 axios(config)
                     .then(function (response) {
-                        console.log("savetoken", response);
-                        console.log("saver token messsage", response.data.data)
                         if (response.data.msg == "User Email for Sync Added") {
                             axiosthis.dspnoaccounts = false
                             axiosthis.accountdatadialog = false;
@@ -531,9 +499,7 @@ export default {
         },
         validate() {
             this.$refs.form.validate()
-            console.log(this.$refs.form.validate())
             if (this.$refs.form.validate()) {
-                console.log("validate if")
                
                 this.addAccount()
             }

@@ -623,7 +623,7 @@
                       TOTAL P&L
                     </p>
                     <span class="ctnbtl sumval" style="line-height: 28px; color: #505359">
-                      {{ tol_tdypnl }}
+                      {{ tol_pnl }}
                     </span>
                   </v-col>
                   <v-col>
@@ -634,7 +634,7 @@
                       TODAY'S P&L
                     </p>
                     <span class="ctnbtl sumval" style="line-height: 28px; color: #505359">
-                      {{ tol_pnl }}
+                      {{ tol_tdypnl.toFixed(2) }}
                     </span>
                   </v-col>
                 </v-row>
@@ -974,12 +974,10 @@ export default {
   },
   mounted() {
     let userBrokerClientId = localStorage.getItem("client-id");
-    let gauthclientseassion = localStorage.clientsessionstore
     this.upcomingEvent()
     let axiosThis = this;
     
     let data = JSON.stringify({
-      // clientid: ["ZE1A57"],
       clientid: [userBrokerClientId],
 
     });
@@ -990,15 +988,14 @@ export default {
       url: `${apiurl}/allholdings`,
       headers: {
         'Content-Type': 'application/json',
+        
       },
       data: data,
     };
 
     axios(holdingconfig)
       .then(function (response) {
-        console.log("allholdings",response)
         axiosThis.holdingsumget = response.data
-        console.log(axiosThis.holdingsumget)
         axiosThis.tol_buyvalue = response.data.tol_buyvalue;
         axiosThis.tol_pnl = response.data.tol_pnl;
         axiosThis.tol_pnl_chg = response.data.tol_pnl_chg;
@@ -1029,7 +1026,6 @@ export default {
 
     axios(pnlconfig)
       .then(function (response) {
-        console.log("p&L",response)
         axiosThis.newPnL = response.data;
           axiosThis.DW_qty = response.data.DW_qty;
           axiosThis.Summ_qty = response.data.Summ_qty;

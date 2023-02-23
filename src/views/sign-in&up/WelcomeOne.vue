@@ -227,7 +227,6 @@ export default {
       ],
       emailRules: [
         (v) => !!v || "Your E-mail is required",
-        (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
       ],
       mobileRules: [
         (v) => !!v || "Your mobile number is required",
@@ -246,12 +245,9 @@ export default {
   methods: {
     validate() {
       this.$refs.form.validate();
-      console.log(this.$refs.form.validate());
       if (this.$refs.form.validate()) {
         let welcomeoneclisesion = localStorage.clientsessionstore;
-        console.log("welcomeone local cilent session", welcomeoneclisesion);
         let axiosthis = this;
-        console.log("data", data);
 
         let data = JSON.stringify({
           UserName: this.name,
@@ -271,17 +267,12 @@ export default {
           },
           data: data,
         };
-        console.log("welcome page header check response", config);
 
         axios(config)
           .then(function (response) {
-            console.log("welcomepage1 response", response);
-            console.log("welcomepage1 status", response.data.data);
 
             if (response.data.data == "Page 1 Details Added") {
               axiosthis.$router.push("/preferencetwo");
-              console.log(JSON.stringify(response.data));
-              console.log("validateresponse", response.data);
             } else {
               axiosthis.$router.push("/signin");
               localStorage.clear();
@@ -292,19 +283,13 @@ export default {
           });
       }
 
-      console.log(this.name);
-      console.log(this.email);
-      console.log(this.select);
-      console.log(this.goals);
     },
   },
   mounted() {
     let access_tokenlocalstr = localStorage.aceesTokenstore;
     this.res = access_tokenlocalstr;
-    console.log("acces_token loc variable store", this.res);
     let declocalsrore = localStorage.decryptedstoredData;
     this.signinemailname = declocalsrore;
-    console.log("signinemailname", this.signinemailname);
   },
 };
 </script>
