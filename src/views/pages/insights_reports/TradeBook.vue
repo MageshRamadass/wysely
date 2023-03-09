@@ -328,6 +328,7 @@ export default {
         url: `${apiurl}/alltradedata`,
         headers: {
           'Content-Type': 'application/json',
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
         },
         data: data,
       };
@@ -365,6 +366,7 @@ export default {
         url: `${apiurl}/alltradebook`,
         headers: {
           'Content-Type': 'application/json',
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
         },
         data: data,
       };

@@ -608,6 +608,7 @@ export default {
         url: `https://api.wysely.in/allpnl`,
         headers: {
           'Content-Type': 'application/json',
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
         },
         data: data
       };
@@ -678,6 +679,7 @@ export default {
         headers: {
           "Content-Type": "application/json",
           Authorization: gauthclientseassion,
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
 
         },
         data: data,

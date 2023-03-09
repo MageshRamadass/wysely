@@ -833,7 +833,9 @@ export default {
         method: 'post',
         url: `${apinew}/allholdings`,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
+
         },
         data: data
       };

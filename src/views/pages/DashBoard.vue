@@ -988,6 +988,7 @@ export default {
       url: `${apiurl}/allholdings`,
       headers: {
         'Content-Type': 'application/json',
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
         
       },
       data: data,
@@ -1019,7 +1020,8 @@ export default {
       url: `${apiurl}/allpnl`,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': gauthclientseassion
+        'Authorization': gauthclientseassion,
+        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
       },
       data: data,
     };

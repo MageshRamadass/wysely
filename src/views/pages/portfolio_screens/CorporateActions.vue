@@ -205,7 +205,10 @@ export default {
       let config = {
         method: 'get',
         url: `${apiurl}/upcoming`,
-        headers: {}
+        headers: {
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
+
+        }
       };
 
       axios(config)
@@ -233,7 +236,8 @@ export default {
         url: `${apiurl}/getCorporateActions`,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': gauthclientseassion
+          'Authorization': gauthclientseassion,
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
         },
         data: datas,
       };

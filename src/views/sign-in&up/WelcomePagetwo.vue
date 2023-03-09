@@ -159,7 +159,8 @@ export default {
           url: `${apiurl}/saveuserdetails`,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': welcometwoclisesion
+            'Authorization': welcometwoclisesion,
+            'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
           },
           data: datasd
         };

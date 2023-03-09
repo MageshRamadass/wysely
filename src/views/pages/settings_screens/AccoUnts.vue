@@ -419,7 +419,8 @@ export default {
                 url: `${apiurl}/syncEmailDetails`,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': this.gauthclientseassion
+                    'Authorization': this.gauthclientseassion,
+                    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
                 },
                 data: data
             };
@@ -477,7 +478,8 @@ export default {
                     url: `${apiurl}/addSyncEmail`,
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': this.gauthclientseassion
+                        'Authorization': this.gauthclientseassion,
+                        'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
                     },
                     data: data
                 };

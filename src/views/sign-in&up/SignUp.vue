@@ -100,7 +100,8 @@ export default {
         url: `${apiurl}/syncEmailDetails`,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': gauthclientseassion
+          'Authorization': gauthclientseassion,
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'
         },
         data: data,
       };
